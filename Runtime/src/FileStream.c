@@ -67,6 +67,19 @@ ZBool ZFileStream_new(ZFileStream *self, ZString path, ZULong globalOffset) {
         return false;
     }
     self->file = file;
+    if (!ZVector_new(&self->libraries, ZLANG_DEFAULT_CAPACITY)) {
+        Zerror("Could not initialize libraries vector!");
+        fclose(file);
+        self->file = NULL;
+        return false;
+    }
+    if (!ZVector_new(&self->types, ZLANG_DEFAULT_CAPACITY)) {
+        Zerror("Could not initialize types vector!");
+        ZVector_delete(&self->libraries);
+        fclose(file);
+        self->file = NULL;
+        return false;
+    }
     return true;
 }
 
@@ -170,10 +183,47 @@ ZBool ZFileStream_inRange(const ZFileStream *self, ZULong globalOffset) {
     return globalOffset >= self->globalOffset && globalOffset < self->globalOffset + self->fileSize;
 }
 
+/** Loads a dynamic library with the given name into the file stream. */
+ZBool ZFileStream_loadLibrary(ZFileStream *self, ZString name) {
+    Zassert(self != NULL, "<self> was NULL!");
+    Zassert(name != NULL, "<name> was NULL!");
+    ZLibrary *lib = (ZLibrary *) malloc(sizeof(ZLibrary));
+    if (lib == NULL) {
+        Zerror("Could not allocate dynamic library!");
+        return false;
+    };
+    if (!ZLibrary_new(lib, name)) {
+        Zerror("Could not initialize dynamic library!");
+        free(lib);
+        return false;
+    }
+    if (!ZVector_push(&self->libraries, (ZULong) lib)) {
+        Zerror("Could not insert dynamic library!");
+        ZLibrary_delete(lib);
+        free(lib);
+        return false;
+    }
+    return true;
+}
+
 /** Cleans up all memory owned by a file stream. */
 void ZFileStream_delete(ZFileStream *self) {
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(self->file != NULL, "<self>'s FILE handle was NULL!");
+    ZUInt count = self->types.count;
+    for (ZUInt i = 0; i < count; ++i) {
+        ZType *type = (ZType *) ZVector_get(&self->types, i);
+        free(type->type.elements);
+        free(type);
+    }
+    ZVector_delete(&self->types);
+    count = self->libraries.count;
+    for (ZUInt i = 0; i < count; ++i) {
+        ZLibrary *lib = (ZLibrary *) ZVector_get(&self->libraries, i);
+        ZLibrary_delete(lib);
+        free(lib);
+    }
+    ZVector_delete(&self->libraries);
     fclose(self->file);
     self->file = NULL;
 }

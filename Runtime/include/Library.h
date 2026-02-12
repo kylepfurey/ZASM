@@ -5,12 +5,15 @@
 #ifndef ZLANG_LIBRARY_H
 #define ZLANG_LIBRARY_H
 
-#include <FileStream.h>
+#include <Vector.h>
 
 /** Denotes that an FFI function is not a varadic function. */
-#define ZLANG_FFI_NO_VARADIC UINT_MAX
+#define ZLANG_CALL_NO_VARADIC UINT_MAX
 
-/** Each enumerated primitive type. */
+/**
+ * Each enumerated primitive type.
+ * Custom struct types follow at and after ZLANG_TYPE_STRUCT.
+ */
 enum {
     ZLANG_TYPE_VOID = 0,
     ZLANG_TYPE_BYTE = 1,
@@ -44,19 +47,22 @@ typedef struct {
 
     /** A vector of pointers to foreign function interfaces. */
     ZVector ffi;
-
-    /** A vector of pointers to foreign function types. */
-    ZVector types;
 } ZLibrary;
 
-/** Data for calling a foreign function. */
+/** Data for a foreign function interface. */
 typedef struct {
-    /** The foreign function to call. */
-    ZFunc func;
-
-    /** The foreign function call's interface. */
+    /** The interface of this foreign function. */
     ffi_cif cif;
-} ZCall;
+
+    /** A pointer to the foreign function. */
+    ZFunc func;
+} ZFFI;
+
+/** Data for a static type. */
+typedef struct {
+    /** The interface of this static type. */
+    ffi_type type;
+} ZType;
 
 #pragma pack(push, 1)
 
@@ -65,30 +71,15 @@ typedef struct {
     /** The ABI of this foreign function call. */
     ZUInt abi;
 
-    /** The total number of typed args. */
+    /** The total number of typed arguments. Argument type indicies follow this structure. */
     ZUInt argCount;
 
-    /** The total number of dynamic args. ZLANG_FFI_NO_VARADIC ignores this. */
-    ZUInt dynCount;
+    /** The total number of varadic arguments. ZLANG_CALL_NO_VARADIC ignores this. */
+    ZUInt varCount;
 
-    /** The local address of the return type. */
-    ZULong returnType;
-} __attribute__((packed)) ZFFI;
-
-/** Metadata for a foreign type. */
-typedef struct {
-    /** The size in bytes of this type. */
-    ZULong size;
-
-    /** The alignment in bytes of this type. */
-    ZUShort alignment;
-
-    /** The ABI category of this type. */
-    ZUShort type;
-
-    /** The total number of element types. */
-    ZUInt elemCount;
-} __attribute__((packed)) ZType;
+    /** The type index of the return type. */
+    ZUInt returnType;
+} __attribute__((packed)) ZCall;
 
 #pragma pack(pop)
 
@@ -97,12 +88,6 @@ ZLANG_API ZBool ZLibrary_new(ZLibrary *self, ZString name);
 
 /** Returns a function pointer from a dynamic library via its name. */
 ZLANG_API ZFunc ZLibrary_find(ZLibrary *self, ZString func);
-
-/**
- * Calls a foreign function with the given index.
- * If this is the first call, this prepares the function instead.
- */
-ZLANG_API ZBool ZLibrary_call(ZLibrary *self, ZFileStream *file, ZUInt index);
 
 /** Cleans up all memory owned by a dynamic library. */
 ZLANG_API void ZLibrary_delete(ZLibrary *self);

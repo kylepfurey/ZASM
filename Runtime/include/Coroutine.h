@@ -34,7 +34,7 @@ typedef struct {
     /** A random number used to identify this coroutine. */
     ZUShort id;
 
-    /** A vector of handle pointers used to share this coroutine's return value. */
+    /** A vector of pointers to handles used to share this coroutine's return value. */
     ZVector dispatcher;
 } ZCoroutine;
 

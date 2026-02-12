@@ -91,16 +91,6 @@ ZBool ZProgram_new(ZProgram *self, ZString path, ZUInt argc, const ZString argv[
         ZVector_delete(&self->coroutines);
         return false;
     }
-    if (!ZVector_new(&self->libraries, ZLANG_DEFAULT_CAPACITY)) {
-        Zerror("Could not initialize FFI vector!");
-        ZFileStream_delete(zac);
-        free(zac);
-        ZVector_delete(&self->files);
-        ZCoroutine_delete(main);
-        free(main);
-        ZVector_delete(&self->coroutines);
-        return false;
-    }
     return true;
 }
 
@@ -178,8 +168,8 @@ ZBool ZProgram_stopCoroutine(ZProgram *self, ZUInt index, ZBool dispatch) {
     return true;
 }
 
-/** Loads a .zlib library into the Z program. */
-ZBool ZProgram_loadZLibrary(ZProgram *self, ZString path) {
+/** Loads a .zlib file at the given path into the Z program. */
+ZBool ZProgram_loadLibrary(ZProgram *self, ZString path) {
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(path != NULL, "<path> was NULL!");
     ZLong length = (ZLong) strlen(path);
@@ -228,29 +218,6 @@ ZBool ZProgram_loadZLibrary(ZProgram *self, ZString path) {
     return true;
 }
 
-/** Loads a dynamic library into the Z program. */
-ZBool ZProgram_loadCLibrary(ZProgram *self, ZString name) {
-    Zassert(self != NULL, "<self> was NULL!");
-    Zassert(name != NULL, "<name> was NULL!");
-    ZLibrary *lib = (ZLibrary *) malloc(sizeof(ZLibrary));
-    if (lib == NULL) {
-        Zerror("Could not allocate dynamic library!");
-        return false;
-    };
-    if (!ZLibrary_new(lib, name)) {
-        Zerror("Could not initialize dynamic library!");
-        free(lib);
-        return false;
-    }
-    if (!ZVector_push(&self->libraries, (ZULong) lib)) {
-        Zerror("Could not insert dynamic library!");
-        ZLibrary_delete(lib);
-        free(lib);
-        return false;
-    }
-    return true;
-}
-
 /** Executes the next coroutine in a Z program. Returns whether the program can continue. */
 ZBool ZProgram_step(ZProgram *self) {
     Zassert(self != NULL, "<self> was NULL!");
@@ -269,14 +236,7 @@ ZInt ZProgram_execute(ZProgram *self) {
 /** Cleans up all memory owned by a Z program. */
 void ZProgram_delete(ZProgram *self) {
     Zassert(self != NULL, "<self> was NULL!");
-    ZUInt count = self->libraries.count;
-    for (ZUInt i = 0; i < count; ++i) {
-        ZLibrary *lib = (ZLibrary *) ZVector_get(&self->libraries, i);
-        ZLibrary_delete(lib);
-        free(lib);
-    }
-    ZVector_delete(&self->libraries);
-    count = self->files.count;
+    ZUInt count = self->files.count;
     for (ZUInt i = 0; i < count; ++i) {
         ZFileStream *file = (ZFileStream *) ZVector_get(&self->files, i);
         ZFileStream_delete(file);

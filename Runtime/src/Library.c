@@ -8,10 +8,6 @@
 ZBool ZLibrary_new(ZLibrary *self, ZString name) {
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(name != NULL, "<name> was NULL!");
-    if (!ZVector_new(&self->types, ZLANG_DEFAULT_CAPACITY)) {
-        Zerror("Could not initialize dynamic library types vector!");
-        return false;
-    }
     if (!ZVector_new(&self->ffi, ZLANG_DEFAULT_CAPACITY)) {
         Zerror("Could not initialize dynamic library FFI vector!");
         return false;
@@ -218,93 +214,6 @@ ZFunc ZLibrary_find(ZLibrary *self, ZString func) {
     return NULL;
 }
 
-/**
- * Calls a foreign function with the given index.
- * If this is the first call, this prepares the function instead.
- */
-ZBool ZLibrary_call(ZLibrary *self, ZFileStream *file, ZUInt index) {
-    Zassert(self != NULL, "<self> was NULL!");
-    Zassert(file != NULL, "<file> was NULL!");
-    if (index < self->ffi.count) {
-        ZCall *call = (ZCall *) ZVector_get(&self->ffi, index);
-        void *ret;
-        void **args;
-        // TODO: Walk argument and return types for call
-        ffi_call(&call->cif, call->func, ret, args);
-        return true;
-    }
-    if (index > self->ffi.count) {
-        Zerror("Cannot load dynamic libraries out of order!");
-        return false;
-    }
-    ZCall *call = (ZCall *) malloc(sizeof(ZCall));
-    if (call == NULL) {
-        Zerror("Could not allocate call for dynamic library!");
-        return false;
-    }
-    ZByte len;
-    if (!ZFileStream_nextByte(file, &len)) {
-        Zerror("Could not get dynamic library function name length!");
-        free(call);
-        return false;
-    }
-    ZChar *name = (ZChar *) malloc(len + 1);
-    if (name == NULL) {
-        Zerror("Could not allocate buffer for dynamic library function name!");
-        free(call);
-        return false;
-    }
-    name[len] = '\0';
-    if (!ZFileStream_nextArray(file, len, (ZByte *) &name)) {
-        Zerror("Could not read dynamic library function name!");
-        free(name);
-        free(call);
-        return false;
-    }
-    call->func = ZLibrary_find(self, name);
-    free(name);
-    if (call->func == NULL) {
-        Zerror("Could not find dynamic library function with name!");
-        free(call);
-        return false;
-    }
-    ZFFI ffi;
-    if (!ZFileStream_nextArray(file, sizeof(ZFFI), (ZByte *) &ffi)) {
-        Zerror("Could not read dynamic library function metadata!");
-        free(call);
-        return false;
-    }
-    // TODO: Allocate type metadata or reuse types by index
-    if (ffi.dynCount == ZLANG_FFI_NO_VARADIC) {
-        if (ffi_prep_cif(
-                call->cif,
-                (ffi_abi) ffi.abi,
-                ffi.argCount,
-                ffi.) != FFI_OK) {
-            Zerror("Could not prepare dynamic library function!");
-            free(call);
-            return false;
-        }
-    } else {
-        if (ffi_prep_cif_var(
-                call->cif,
-                (ffi_abi) ffi.abi,
-                ffi.argCount,
-                ffi.dynCount,
-                ffi.) != FFI_OK) {
-            Zerror("Could not prepare varadic dynamic library function!");
-            free(call);
-            return false;
-        }
-    }
-    if (!ZVector_push(&self->ffi, (ZULong) call)) {
-        Zerror("Could not insert dynamic library function!");
-        free(call);
-        return false;
-    }
-    return true;
-}
-
 /** Cleans up all memory owned by a dynamic library. */
 void ZLibrary_delete(ZLibrary *self) {
     Zassert(self != NULL, "<self> was NULL!");
@@ -326,15 +235,9 @@ void ZLibrary_delete(ZLibrary *self) {
 
     self->handle = NULL;
     for (ZUInt i = 0; i < self->ffi.count; ++i) {
-        ZCall *call = (ZCall *) ZVector_get(&self->ffi, i);
-        free(call->cif.arg_types);
-        free(call);
+        ZFFI *ffi = (ZFFI *) ZVector_get(&self->ffi, i);
+        free(ffi->cif.arg_types);
+        free(ffi);
     }
     ZVector_delete(&self->ffi);
-    for (ZUInt i = 0; i < self->types.count; ++i) {
-        ffi_type *type = (ffi_type *) ZVector_get(&self->types, i);
-        free(type->elements);
-        free(type);
-    }
-    ZVector_delete(&self->types);
 }

@@ -51,6 +51,6 @@ typedef char ZChar;
 typedef const ZChar *ZString;
 
 /** A pointer to an anonymous function. */
-typedef void (*ZFunc)();
+typedef void (*ZFunc)(void);
 
 #endif // ZLANG_TYPES_H
