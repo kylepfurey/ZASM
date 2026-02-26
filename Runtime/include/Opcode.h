@@ -5,14 +5,15 @@
 #ifndef ZLANG_OPCODE_H
 #define ZLANG_OPCODE_H
 
-#include <Types.h>
+#include <Program.h>
 
 /** Each enumerated operation code. */
 enum {
     ZOPCODE_MAGIC = 'Z', // first and last byte of file
     ZOPCODE_exit = 'E', // exit (void)
-    ZOPCODE_open = 'O', // open (read)
-    ZOPCODE_load = 'L', // load (write, read, size)
+    ZOPCODE_load = 'L', // load (read)
+    ZOPCODE_lib = 'l', // lib (read)
+    ZOPCODE_read = 'R', // read (write, read, size)
     ZOPCODE_push = 'P', // push (read)
     ZOPCODE_pop = 'p', // pop (read)
     ZOPCODE_move = 'M', // move (write, read, size)
@@ -23,7 +24,7 @@ enum {
     ZOPCODE_jump = 'J', // jump (read)
     ZOPCODE_hop = 'j', // hop (read)
     ZOPCODE_call = 'C', // call (read)
-    ZOPCODE_ret = 'R', // ret (read)
+    ZOPCODE_ret = 'r', // ret (read)
     ZOPCODE_addr = '$', // addr (write, read)
     ZOPCODE_eql = '=', // eql (write, read, size)
     ZOPCODE_grtr = 'G', // grtr (write, read, size)
@@ -53,7 +54,7 @@ enum {
     ZOPCODE_uint = 'u', // uint (write, read, size)
     ZOPCODE_flt = 'f', // flt (write, read, size)
     ZOPCODE_ffi = 'F', // ffi (read)
-    ZOPCODE_TOTAL = 43, // <= 256
+    ZOPCODE_TOTAL = 44, // <= 256
 };
 
 /** Each bitflag value for an operation. */
