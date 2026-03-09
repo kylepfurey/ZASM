@@ -84,7 +84,7 @@ ZBool ZFileStream_new(ZFileStream *self, ZString path, ZULong globalOffset) {
 }
 
 /** Outputs the next byte of a file stream, iterating chunks when needed. */
-ZBool ZFileStream_nextByte(ZFileStream *self, ZByte *byte) {
+ZBool ZFileStream_nextByte(ZFileStream *self, ZByte *byte, ZCoroutine *coro) {
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(self->file != NULL, "<self>'s FILE handle was NULL!");
     Zassert(byte != NULL, "<byte> was NULL!");
@@ -100,24 +100,27 @@ ZBool ZFileStream_nextByte(ZFileStream *self, ZByte *byte) {
             return false;
         }
     }
+    if (coro != NULL) {
+        coro->globalOffset = ZFileStream_globalOffset(self);
+    }
     return true;
 }
 
 /** Outputs an array of bytes from a file stream, iterating chunks when needed. */
-ZBool ZFileStream_nextArray(ZFileStream *self, ZUInt size, ZByte *array) {
+ZBool ZFileStream_nextArray(ZFileStream *self, ZUInt size, ZByte *array, ZCoroutine *coro) {
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(self->file != NULL, "<self>'s FILE handle was NULL!");
     Zassert(array != NULL, "<array> was NULL!");
     if (ZLANG_LITTLE_ENDIAN) {
         for (; size > 0; --size) {
-            if (!ZFileStream_nextByte(self, array++)) {
+            if (!ZFileStream_nextByte(self, array++, coro)) {
                 return false;
             }
         }
     } else {
         array += size;
         for (; size > 0; --size) {
-            if (!ZFileStream_nextByte(self, --array)) {
+            if (!ZFileStream_nextByte(self, --array, coro)) {
                 return false;
             }
         }
@@ -146,7 +149,8 @@ ZBool ZFileStream_jumpLocal(ZFileStream *self, ZULong localOffset) {
 ZFileStream *ZFileStream_jumpGlobal(
     ZUInt fileCount,
     ZFileStream *files[],
-    ZULong globalOffset
+    ZULong globalOffset,
+    ZCoroutine *coro
 ) {
     Zassert(files != NULL, "<files> was NULL!");
     while (fileCount > 0 && !ZFileStream_inRange(*files, globalOffset)) {
@@ -161,6 +165,9 @@ ZFileStream *ZFileStream_jumpGlobal(
     if (!ZFileStream_jumpLocal(files[0], globalOffset)) {
         Zerror("Invalid global jump!");
         return NULL;
+    }
+    if (coro != NULL) {
+        coro->globalOffset = globalOffset;
     }
     return files[0];
 }

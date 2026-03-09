@@ -20,6 +20,13 @@ void ZProgram_kill(int code) {
 
 #endif
 
+/** Returns the time in milliseconds. */
+ZULong ZTime(ZUInt offsetMs) {
+    clock_t ticks = clock();
+    ZULong ms = (ZULong) ((ticks * 1000) / CLOCKS_PER_SEC);
+    return ms + offsetMs;
+}
+
 /** Initializes a new Z program. */
 ZBool ZProgram_new(ZProgram *self, ZString path, ZUInt argc, const ZString argv[]) {
     Zassert(self != NULL, "<self> was NULL!");
@@ -254,6 +261,7 @@ ZBool ZProgram_loadLibrary(ZProgram *self, ZString path) {
 /** Binds a foreign function to the Z program. */
 ZBool ZProgram_bind(
     ZProgram *self,
+    ZCoroutine *coro,
     ZFileStream *file,
     ZUInt library
 ) {
@@ -269,7 +277,7 @@ ZBool ZProgram_bind(
         return false;
     }
     ZUInt length;
-    if (!ZFileStream_nextArray(file, sizeof(ZUInt), (ZByte *) &length)) {
+    if (!ZFileStream_nextArray(file, sizeof(ZUInt), (ZByte *) &length, coro)) {
         Zerror("Unable to read FFI binding name length!");
         return false;
     }
@@ -278,13 +286,13 @@ ZBool ZProgram_bind(
         Zerror("Could not allocate FFI binding name!");
         return false;
     }
-    if (!ZFileStream_nextArray(file, length, (ZByte *) &str)) {
+    if (!ZFileStream_nextArray(file, length, (ZByte *) &str, coro)) {
         Zerror("Unable to read FFI binding name!");
         free(str);
         return false;
     }
     ZCall call;
-    if (!ZFileStream_nextArray(file, sizeof(ZCall), (ZByte *) &call)) {
+    if (!ZFileStream_nextArray(file, sizeof(ZCall), (ZByte *) &call, coro)) {
         Zerror("Unable to read FFI binding call!");
         free(str);
         return false;
@@ -321,7 +329,7 @@ ZBool ZProgram_bind(
         argTypes[i] = type;
     }
     free(argIndicies);
-    if (!ZFileStream_nextArray(file, argCount * sizeof(ZUInt), (ZByte *) &argIndicies)) {
+    if (!ZFileStream_nextArray(file, argCount * sizeof(ZUInt), (ZByte *) &argIndicies, coro)) {
         Zerror("Unable to read FFI binding arguments!");
         free(argTypes);
         free(str);
@@ -349,8 +357,8 @@ ZBool ZProgram_bind(
 /** Calls a foreign function from the Z program's libraries. */
 ZBool ZProgram_call(
     ZProgram *self,
-    ZFileStream *file,
     ZCoroutine *coro,
+    ZFileStream *file,
     ZUInt library,
     ZUInt ffi
 ) {
@@ -376,7 +384,33 @@ ZBool ZProgram_call(
 /** Executes the next coroutine in a Z program. Returns whether the program can continue. */
 ZBool ZProgram_step(ZProgram *self) {
     Zassert(self != NULL, "<self> was NULL!");
-    return false;
+    ZCoroutine *coro;
+    do {
+        self->current = (self->current + 1) % self->coroutines.count;
+        coro = (ZCoroutine *) ZVector_get(&self->coroutines, self->current);
+        // NOTE: Can deadlock
+    } while (
+        coro == NULL ||
+        coro->delayMs > ZTime(0) ||
+        (coro->await > 0 && (ZCoroutine *) ZVector_get(&self->coroutines, coro->await) != NULL)
+    );
+    ZULong current = ZTime(0);
+    ZULong time = ZTime(ZLANG_COROUTINE_DELAY_MS);
+    while (current < time) {
+        if (!ZOpcode_nextCode(self)) {
+            return false;
+        }
+        coro = (ZCoroutine *) ZVector_get(&self->coroutines, self->current);
+        if (
+            coro == NULL ||
+            coro->delayMs > current ||
+            (coro->await > 0 && (ZCoroutine *) ZVector_get(&self->coroutines, coro->await) != NULL)
+        ) {
+            break;
+        }
+        current = ZTime(0);
+    }
+    return true;
 }
 
 /** Runs a Z program until completion. Returns the result of main. */

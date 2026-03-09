@@ -30,6 +30,9 @@ typedef struct {
     ZLibrary libc;
 } ZProgram;
 
+/** Returns the time in milliseconds. */
+ZLANG_API ZULong ZTime(ZUInt offsetMs);
+
 /** Initializes a new Z program. */
 ZLANG_API ZBool ZProgram_new(ZProgram *self, ZString path, ZUInt argc, const ZString argv[]);
 
@@ -50,6 +53,7 @@ ZLANG_API ZBool ZProgram_loadLibrary(ZProgram *self, ZString path);
 /** Binds a foreign function to the Z program. */
 ZLANG_API ZBool ZProgram_bind(
     ZProgram *self,
+    ZCoroutine *coro,
     ZFileStream *file,
     ZUInt library
 );
@@ -57,8 +61,8 @@ ZLANG_API ZBool ZProgram_bind(
 /** Calls a foreign function from the Z program's libraries. */
 ZLANG_API ZBool ZProgram_call(
     ZProgram *self,
-    ZFileStream *file,
     ZCoroutine *coro,
+    ZFileStream *file,
     ZUInt library,
     ZUInt ffi
 );

@@ -16,6 +16,7 @@
 #define Zlog(...)\
 do {\
     fprintf(stdout, "Z LOG:\t\t");\
+    fprintf(stderr, "%s() - ", __func__);\
     fprintf(stdout, __VA_ARGS__);\
     fprintf(stdout, "\n");\
 } while (false)
@@ -33,6 +34,7 @@ do {\
 #define Zerror(...)\
 do {\
     fprintf(stderr, "Z ERROR:\t");\
+    fprintf(stderr, "%s() - ", __func__);\
     fprintf(stderr, __VA_ARGS__);\
     fprintf(stderr, "\n");\
 } while (false)

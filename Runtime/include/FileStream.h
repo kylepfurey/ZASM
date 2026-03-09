@@ -5,6 +5,7 @@
 #ifndef ZLANG_FILESTREAM_H
 #define ZLANG_FILESTREAM_H
 
+#include <Coroutine.h>
 #include <Library.h>
 
 /** The size of a single file chunk loaded into memory. */
@@ -47,10 +48,10 @@ typedef struct {
 ZLANG_API ZBool ZFileStream_new(ZFileStream *self, ZString path, ZULong globalOffset);
 
 /** Outputs the next byte of a file stream, iterating chunks when needed. */
-ZLANG_API ZBool ZFileStream_nextByte(ZFileStream *self, ZByte *byte);
+ZLANG_API ZBool ZFileStream_nextByte(ZFileStream *self, ZByte *byte, ZCoroutine *coro);
 
 /** Outputs an array of bytes from a file stream, iterating chunks when needed. */
-ZLANG_API ZBool ZFileStream_nextArray(ZFileStream *self, ZUInt size, ZByte *array);
+ZLANG_API ZBool ZFileStream_nextArray(ZFileStream *self, ZUInt size, ZByte *array, ZCoroutine *coro);
 
 /** Jumps to the given local offset in a file stream. */
 ZLANG_API ZBool ZFileStream_jumpLocal(ZFileStream *self, ZULong localOffset);
@@ -59,7 +60,8 @@ ZLANG_API ZBool ZFileStream_jumpLocal(ZFileStream *self, ZULong localOffset);
 ZLANG_API ZFileStream *ZFileStream_jumpGlobal(
     ZUInt fileCount,
     ZFileStream *files[],
-    ZULong globalOffset
+    ZULong globalOffset,
+    ZCoroutine *coro
 );
 
 /** Returns the current local offset of a file stream. */

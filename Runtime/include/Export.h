@@ -42,7 +42,7 @@
 #ifdef ZLANG_EXPORTS
 
 /** Windows export. */
-#define ZLANG_API __declspec(dllexport)
+#define ZLANG_API __declspec(dllexport) inline
 
 /** Defined if SIGINT is a valid way to kill a Z program. */
 #define ZLANG_SIGINT
@@ -50,7 +50,7 @@
 #else
 
 /** Windows import. */
-#define ZLANG_API __declspec(dllimport)
+#define ZLANG_API __declspec(dllimport) inline
 
 #endif
 
@@ -62,12 +62,12 @@
 #ifdef ZLANG_EXPORTS
 
 /** MacOS / Linux export. */
-#define ZLANG_API __attribute__((visibility("default")))
+#define ZLANG_API __attribute__((visibility("default"))) inline
 
 #else
 
 /** Fallback. */
-#define ZLANG_API
+#define ZLANG_API inline
 
 /** Defined if SIGINT is a valid way to kill a Z program. */
 #define ZLANG_SIGINT
