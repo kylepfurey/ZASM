@@ -72,87 +72,6 @@ ZBool ZOpcode_nextCode(ZProgram *self) {
     return ZOpcode_TABLE[code](self, coro, file);
 }
 
-/** Processes the read argument of a Z operation code. */
-ZBool ZOpcode_getReadArg(
-    ZProgram *self,
-    ZCoroutine *coro,
-    ZFileStream *file,
-    ZByte flags,
-    ZUInt *read
-) {
-    Zassert(self != NULL, "<self> was NULL!");
-    Zassert(coro != NULL, "<coro> was NULL!");
-    Zassert(file != NULL, "<file> was NULL!");
-    Zassert(read != NULL, "<read> was NULL!");
-    if (!ZFileStream_nextArray(file, sizeof(ZUInt), (ZByte *) read, coro)) {
-        Zerror("Could not read <read> argument literal!");
-        return false;
-    }
-    if ((flags & ZOPCODE_FLAGS_SIZE_LITERAL) == 0) {
-        ZUInt *arg = (ZUInt *) ZStack_peekTop(&coro->stack, *read, 0);
-        if (arg == NULL) {
-            Zerror("Could not find <read> argument on stack!");
-            return false;
-        }
-        *read = *arg;
-    }
-    return true;
-}
-
-/** Processes the write argument of a Z operation code. */
-ZBool ZOpcode_getWriteArg(
-    ZProgram *self,
-    ZCoroutine *coro,
-    ZFileStream *file,
-    ZByte flags,
-    ZUInt *write
-) {
-    Zassert(self != NULL, "<self> was NULL!");
-    Zassert(coro != NULL, "<coro> was NULL!");
-    Zassert(file != NULL, "<file> was NULL!");
-    Zassert(write != NULL, "<write> was NULL!");
-    if (!ZFileStream_nextArray(file, sizeof(ZUInt), (ZByte *) write, coro)) {
-        Zerror("Could not read <write> argument literal!");
-        return false;
-    }
-    if ((flags & ZOPCODE_FLAGS_SIZE_LITERAL) == 0) {
-        ZUInt *arg = (ZUInt *) ZStack_peekTop(&coro->stack, *write, 0);
-        if (arg == NULL) {
-            Zerror("Could not find <write> argument on stack!");
-            return false;
-        }
-        *write = *arg;
-    }
-    return true;
-}
-
-/** Processes the size argument of a Z operation code. */
-ZBool ZOpcode_getSizeArg(
-    ZProgram *self,
-    ZCoroutine *coro,
-    ZFileStream *file,
-    ZByte flags,
-    ZULong *size
-) {
-    Zassert(self != NULL, "<self> was NULL!");
-    Zassert(coro != NULL, "<coro> was NULL!");
-    Zassert(file != NULL, "<file> was NULL!");
-    Zassert(size != NULL, "<size> was NULL!");
-    if (!ZFileStream_nextArray(file, sizeof(ZULong), (ZByte *) size, coro)) {
-        Zerror("Could not read <size> argument literal!");
-        return false;
-    }
-    if ((flags & ZOPCODE_FLAGS_SIZE_LITERAL) == 0) {
-        ZULong *arg = (ZULong *) ZStack_peekTop(&coro->stack, *size, sizeof(ZULong));
-        if (arg == NULL) {
-            Zerror("Could not find <size> argument on stack!");
-            return false;
-        }
-        *size = *arg;
-    }
-    return true;
-}
-
 /** exit (void) */
 ZBool ZOpcode_exit(
     ZProgram *self,
@@ -174,50 +93,6 @@ ZBool ZOpcode_load(
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(coro != NULL, "<coro> was NULL!");
     Zassert(file != NULL, "<file> was NULL!");
-    ZByte flags;
-    if (!ZFileStream_nextByte(file, &flags, coro)) {
-        Zerror("Could not find opcode flags!");
-        return false;
-    }
-    ZULong size;
-    if (!ZOpcode_getSizeArg(self, coro, file, flags, &size)) {
-        Zerror("Could not get <size> argument!");
-        return false;
-    }
-    ZChar *path = (ZChar *) malloc(size * sizeof(ZChar));
-    if (path == NULL) {
-        Zerror("Could not allocate string buffer!");
-        return false;
-    }
-    if (!ZFileStream_nextArray(file, size, (ZByte *) &path, coro)) {
-        Zerror("Could not read string literal from file!");
-        free(path);
-        return false;
-    }
-    if (!ZProgram_loadLibrary(self, path)) {
-        Zerror("Could not load zlib file from string literal!");
-        free(path);
-        return true;
-    }
-    free(path);
-    if (!ZStack_push(&coro->stack, sizeof(ZULong))) {
-        Zerror("Could not push return address!");
-        return false;
-    }
-    void *ret = ZStack_peekTop(&coro->stack, sizeof(ZULong), sizeof(ZULong));
-    Zassert(ret != NULL, "Corrupted coroutine stack!");
-    memcpy(ret, &coro->globalOffset, sizeof(ZULong));
-    ZFileStream *jumpedFile = ZFileStream_jumpGlobal(
-        self->files.count,
-        (ZFileStream **) self->files.array,
-        ((ZFileStream *) ZVector_get(&self->files, self->files.count - 1))->globalOffset + 1,
-        coro
-    );
-    if (jumpedFile == NULL) {
-        Zerror("Could not jump to zlib library!");
-        return false;
-    }
-    return true;
 }
 
 /** lib (size) */
@@ -229,33 +104,6 @@ ZBool ZOpcode_lib(
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(coro != NULL, "<coro> was NULL!");
     Zassert(file != NULL, "<file> was NULL!");
-    ZByte flags;
-    if (!ZFileStream_nextByte(file, &flags, coro)) {
-        Zerror("Could not find opcode flags!");
-        return false;
-    }
-    ZULong size;
-    if (!ZOpcode_getSizeArg(self, coro, file, flags, &size)) {
-        Zerror("Could not get <size> argument!");
-        return false;
-    }
-    ZChar *name = (ZChar *) malloc(size * sizeof(ZChar));
-    if (name == NULL) {
-        Zerror("Could not allocate string buffer!");
-        return false;
-    }
-    if (!ZFileStream_nextArray(file, size, (ZByte *) &name, coro)) {
-        Zerror("Could not read string literal from file!");
-        free(name);
-        return false;
-    }
-    if (!ZFileStream_loadLibrary(file, name)) {
-        Zerror("Could not load dynamic library from string literal!");
-        free(name);
-        return true;
-    }
-    free(name);
-    return true;
 }
 
 /** read (write, read, size) */
@@ -267,52 +115,6 @@ ZBool ZOpcode_read(
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(coro != NULL, "<coro> was NULL!");
     Zassert(file != NULL, "<file> was NULL!");
-    ZByte flags;
-    if (!ZFileStream_nextByte(file, &flags, coro)) {
-        Zerror("Could not find opcode flags!");
-        return false;
-    }
-    ZUInt write;
-    if (!ZOpcode_getWriteArg(self, coro, file, flags, &write)) {
-        Zerror("Could not get <write> argument!");
-        return false;
-    }
-    ZUInt read;
-    if (!ZOpcode_getReadArg(self, coro, file, flags, &read)) {
-        Zerror("Could not get <read> argument!");
-        return false;
-    }
-    ZULong size;
-    if (!ZOpcode_getSizeArg(self, coro, file, flags, &size)) {
-        Zerror("Could not get <size> argument!");
-        return false;
-    }
-    void *writeStack = ZStack_peekTop(&coro->stack, write, 0);
-    if (writeStack == NULL) {
-        Zerror("Could not find <write> argument on stack!");
-        return false;
-    }
-    ZULong globalOffset = coro->globalOffset;
-    ZFileStream *jumpedFile = ZFileStream_jumpGlobal(
-        self->files.count,
-        (ZFileStream **) self->files.array,
-        file->globalOffset + read,
-        coro);
-    if (jumpedFile == NULL) {
-        Zerror("Invalid local jump!");
-        return false;
-    }
-    if (!ZFileStream_nextArray(jumpedFile, size, writeStack, coro)) {
-        Zerror("Could not read from file!");
-        return false;
-    }
-    Zassert(ZFileStream_jumpGlobal(
-                self->files.count,
-                (ZFileStream **) self->files.array,
-                globalOffset,
-                coro),
-            "Corrupted coroutine global offset!");
-    return true;
 }
 
 /** push (size) */
@@ -324,21 +126,6 @@ ZBool ZOpcode_push(
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(coro != NULL, "<coro> was NULL!");
     Zassert(file != NULL, "<file> was NULL!");
-    ZByte flags;
-    if (!ZFileStream_nextByte(file, &flags, coro)) {
-        Zerror("Could not find opcode flags!");
-        return false;
-    }
-    ZULong size;
-    if (!ZOpcode_getSizeArg(self, coro, file, flags, &size)) {
-        Zerror("Could not get <size> argument!");
-        return false;
-    }
-    if (!ZStack_push(&coro->stack, size)) {
-        Zerror("Could not push to stack!");
-        return false;
-    }
-    return true;
 }
 
 /** pop (size) */
@@ -350,21 +137,6 @@ ZBool ZOpcode_pop(
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(coro != NULL, "<coro> was NULL!");
     Zassert(file != NULL, "<file> was NULL!");
-    ZByte flags;
-    if (!ZFileStream_nextByte(file, &flags, coro)) {
-        Zerror("Could not find opcode flags!");
-        return false;
-    }
-    ZULong size;
-    if (!ZOpcode_getSizeArg(self, coro, file, flags, &size)) {
-        Zerror("Could not get <size> argument!");
-        return false;
-    }
-    if (!ZStack_pop(&coro->stack, size)) {
-        Zerror("Could not pop from stack!");
-        return false;
-    }
-    return true;
 }
 
 /** move (write, read, size) */
@@ -376,38 +148,6 @@ ZBool ZOpcode_move(
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(coro != NULL, "<coro> was NULL!");
     Zassert(file != NULL, "<file> was NULL!");
-    ZByte flags;
-    if (!ZFileStream_nextByte(file, &flags, coro)) {
-        Zerror("Could not find opcode flags!");
-        return false;
-    }
-    ZUInt write;
-    if (!ZOpcode_getWriteArg(self, coro, file, flags, &write)) {
-        Zerror("Could not get <write> argument!");
-        return false;
-    }
-    ZUInt read;
-    if (!ZOpcode_getReadArg(self, coro, file, flags, &read)) {
-        Zerror("Could not get <read> argument!");
-        return false;
-    }
-    ZULong size;
-    if (!ZOpcode_getSizeArg(self, coro, file, flags, &size)) {
-        Zerror("Could not get <size> argument!");
-        return false;
-    }
-    void *writeStack = ZStack_peekTop(&coro->stack, write, 0);
-    if (writeStack == NULL) {
-        Zerror("Could not find <write> argument on stack!");
-        return false;
-    }
-    void *readStack = ZStack_peekTop(&coro->stack, read, 0);
-    if (readStack == NULL) {
-        Zerror("Could not find <read> argument on stack!");
-        return false;
-    }
-    memcpy(writeStack, readStack, size);
-    return true;
 }
 
 /** set (write, read, size) */
@@ -419,33 +159,6 @@ ZBool ZOpcode_set(
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(coro != NULL, "<coro> was NULL!");
     Zassert(file != NULL, "<file> was NULL!");
-    ZByte flags;
-    if (!ZFileStream_nextByte(file, &flags, coro)) {
-        Zerror("Could not find opcode flags!");
-        return false;
-    }
-    ZUInt write;
-    if (!ZOpcode_getWriteArg(self, coro, file, flags, &write)) {
-        Zerror("Could not get <write> argument!");
-        return false;
-    }
-    ZUInt read;
-    if (!ZOpcode_getReadArg(self, coro, file, flags, &read)) {
-        Zerror("Could not get <read> argument!");
-        return false;
-    }
-    ZULong size;
-    if (!ZOpcode_getSizeArg(self, coro, file, flags, &size)) {
-        Zerror("Could not get <size> argument!");
-        return false;
-    }
-    void *writeStack = ZStack_peekTop(&coro->stack, write, 0);
-    if (writeStack == NULL) {
-        Zerror("Could not find <write> argument on stack!");
-        return false;
-    }
-    memset(writeStack, (int) read, size);
-    return true;
 }
 
 /** get (write, read, size) */
@@ -479,33 +192,6 @@ ZBool ZOpcode_ptr(
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(coro != NULL, "<coro> was NULL!");
     Zassert(file != NULL, "<file> was NULL!");
-    ZByte flags;
-    if (!ZFileStream_nextByte(file, &flags, coro)) {
-        Zerror("Could not find opcode flags!");
-        return false;
-    }
-    ZUInt write;
-    if (!ZOpcode_getWriteArg(self, coro, file, flags, &write)) {
-        Zerror("Could not get <write> argument!");
-        return false;
-    }
-    ZUInt read;
-    if (!ZOpcode_getReadArg(self, coro, file, flags, &read)) {
-        Zerror("Could not get <read> argument!");
-        return false;
-    }
-    void *writeStack = ZStack_peekTop(&coro->stack, write, 0);
-    if (writeStack == NULL) {
-        Zerror("Could not find <write> argument on stack!");
-        return false;
-    }
-    void *readStack = ZStack_peekTop(&coro->stack, read, 0);
-    if (readStack == NULL) {
-        Zerror("Could not find <read> argument on stack!");
-        return false;
-    }
-    memcpy(writeStack, &readStack, sizeof(void *));
-    return true;
 }
 
 /** jump (size) */
