@@ -386,6 +386,10 @@ ZBool ZLibrary_call(ZLibrary *self, ZUInt index, ZStack *stack) {
     }
     ffi_call(&ffi->cif, ffi->func, returnValue, argValues);
     free(argValues);
+    if (!ZStack_pop(stack, ffi->signature[ffi->signature[1] - 1])) {
+        Zerror("Could not pop FFI arguments from stack!");
+        return false;
+    }
     return true;
 }
 

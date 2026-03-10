@@ -75,6 +75,33 @@ extern ZBool (*const ZOpcode_TABLE[256])(ZProgram *, ZCoroutine *, ZFileStream *
 /** Executes a Z program's next operation code. */
 ZLANG_API ZBool ZOpcode_nextCode(ZProgram *self);
 
+/** Processes the read argument of a Z operation code. */
+ZLANG_API ZBool ZOpcode_getReadArg(
+    ZProgram *self,
+    ZCoroutine *coro,
+    ZFileStream *file,
+    ZByte flags,
+    ZUInt *read
+);
+
+/** Processes the write argument of a Z operation code. */
+ZLANG_API ZBool ZOpcode_getWriteArg(
+    ZProgram *self,
+    ZCoroutine *coro,
+    ZFileStream *file,
+    ZByte flags,
+    ZUInt *write
+);
+
+/** Processes the size argument of a Z operation code. */
+ZLANG_API ZBool ZOpcode_getSizeArg(
+    ZProgram *self,
+    ZCoroutine *coro,
+    ZFileStream *file,
+    ZByte flags,
+    ZULong *size
+);
+
 /** exit (void) */
 ZLANG_API ZBool ZOpcode_exit(
     ZProgram *self,
