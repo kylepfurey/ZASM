@@ -69,25 +69,5 @@ namespace ZLang
 
             Console.Error.WriteLine();
         }
-
-        /// <summary>
-        /// Stops compilation with the given message <msg> if <cond> is false.
-        /// </summary>
-        public static void Assert(bool cond, params object[] msg)
-        {
-            if (!cond)
-            {
-                StringBuilder error = new();
-
-                foreach (var obj in msg)
-                {
-                    error.Append(obj.ToString());
-                }
-
-                error.AppendLine();
-
-                throw new Exception("\n\nZ ASSERTION FAILED:\t" + error.ToString());
-            }
-        }
     }
 }

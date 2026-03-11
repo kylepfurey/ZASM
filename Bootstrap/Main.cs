@@ -17,6 +17,21 @@ public static class Program
     /** Compiles a Z assembly, executable, or library. */
     public static int Main(params string[] args)
     {
-        return 0;
+        int i = 0;
+        foreach (string arg in args)
+        {
+            Print.Log($"Argument {i++}: {arg}");
+        }
+
+        if (args.Length <= 0)
+        {
+            Print.Error("No files were given!");
+            return Print.ERROR;
+        }
+
+        return Compiler.CompileFile(
+            args.Length >= 2 ? args[^2] : args[^1],
+            args.Length >= 2 ? args[^1] : null
+        );
     }
 }
