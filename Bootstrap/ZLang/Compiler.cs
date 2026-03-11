@@ -84,7 +84,7 @@ namespace ZLang
 
                 Print.Log($"Compiling \"{source}\" to \"{target}\".");
                 string sourceCode = File.ReadAllText(source);
-                string? targetCode = CompileString(
+                byte[]? targetCode = CompileString(
                     sourceCode,
                     targetExt.ToLower() == Assembler.ZASM_EXT ? CompilationTarget.ASSEMBLY : CompilationTarget.BINARY
                 );
@@ -95,7 +95,7 @@ namespace ZLang
                     return Print.ERROR;
                 }
 
-                File.WriteAllText(target, targetCode);
+                File.WriteAllBytes(target, targetCode);
 
                 return Print.OK;
             }
@@ -109,19 +109,21 @@ namespace ZLang
         /// <summary>
         /// Compiles the given string into a Z binary.
         /// </summary>
-        public static string? CompileString(string source, CompilationTarget format = CompilationTarget.BINARY)
+        public static byte[]? CompileString(string source, CompilationTarget format = CompilationTarget.BINARY)
         {
-            string? target = "";
+            MemoryStream target = new();
 
             // TODO
 
+            byte[]? result = target.ToArray();
+
             if (format == CompilationTarget.BINARY)
             {
-                target = Assembler.AssembleString(target);
+                result = Assembler.AssembleString(Encoding.UTF8.GetString(result));
             }
 
             Print.Log("Compilation successful.");
-            return target;
+            return result;
         }
     }
 }

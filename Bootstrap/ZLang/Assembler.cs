@@ -67,7 +67,7 @@ namespace ZLang
 
                 Print.Log($"Assembling \"{source}\" to \"{target}\".");
                 string sourceCode = File.ReadAllText(source);
-                string? targetCode = AssembleString(sourceCode);
+                byte[]? targetCode = AssembleString(sourceCode);
 
                 if (targetCode == null)
                 {
@@ -75,7 +75,7 @@ namespace ZLang
                     return Print.ERROR;
                 }
 
-                File.WriteAllText(target, targetCode);
+                File.WriteAllBytes(target, targetCode);
 
                 return Print.OK;
             }
@@ -89,14 +89,84 @@ namespace ZLang
         /// <summary>
         /// Assembles the given string into a Z binary.
         /// </summary>
-        public static string? AssembleString(string source)
+        public static byte[]? AssembleString(string source)
         {
-            string? target = "";
+            LinkedList<string> tokens = TokenizeString(InlineCode(source));
+
+            tokens.PrintAll();
+
+            MemoryStream target = new();
 
             // TODO
 
+            byte[]? result = target.ToArray();
+
             Print.Log("Assembly successful.");
-            return target;
+            return result;
+        }
+
+        /// <summary>
+        /// Iterates the string and strips out comments, newlines, and whitespace.
+        /// </summary>
+        public static string InlineCode(string source, char comment = ';', char delim = ' ')
+        {
+            StringBuilder target = new();
+
+            bool awaitNewline = false;
+            bool previousSpace = false;
+            foreach (char c in source)
+            {
+                if (!awaitNewline)
+                {
+                    if (c == comment)
+                    {
+                        awaitNewline = true;
+                    }
+                    else if (char.IsWhiteSpace(c))
+                    {
+                        if (!previousSpace)
+                        {
+                            previousSpace = true;
+                            target.Append(delim);
+                        }
+                    }
+                    else
+                    {
+                        previousSpace = false;
+                        target.Append(c);
+                    }
+                }
+                else
+                {
+                    if (c == '\n')
+                    {
+                        awaitNewline = false;
+                        if (!previousSpace)
+                        {
+                            previousSpace = true;
+                            target.Append(delim);
+                        }
+                    }
+                }
+            }
+
+            return target.ToString();
+        }
+
+        /// <summary>
+        /// Takes a string and splits it into tokens.
+        /// </summary>
+        public static LinkedList<string> TokenizeString(string source, char delim = ' ')
+        {
+            LinkedList<string> list = new();
+
+            source
+                .Split(delim)
+                .Where((str) => !string.IsNullOrWhiteSpace(str))
+                .ForEach((str) => list.AddLast(str.Trim()));
+            // TODO - Combine string tokens, separate operator tokens
+
+            return list;
         }
     }
 }
