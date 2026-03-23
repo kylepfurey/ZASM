@@ -49,6 +49,7 @@ ZBool (*const ZOpcode_TABLE[256])(ZProgram *, ZCoroutine *, ZFileStream *) = {
     [ZOPCODE_int] = ZOpcode_int,
     [ZOPCODE_uint] = ZOpcode_uint,
     [ZOPCODE_flt] = ZOpcode_flt,
+    [ZOPCODE_prep] = ZOpcode_prep,
     [ZOPCODE_ffi] = ZOpcode_ffi,
 };
 
@@ -536,6 +537,17 @@ ZBool ZOpcode_uint(
 
 /** flt (write, read, size) */
 ZBool ZOpcode_flt(
+    ZProgram *self,
+    ZCoroutine *coro,
+    ZFileStream *file
+) {
+    Zassert(self != NULL, "<self> was NULL!");
+    Zassert(coro != NULL, "<coro> was NULL!");
+    Zassert(file != NULL, "<file> was NULL!");
+}
+
+/** prep (read, size) */
+ZBool ZOpcode_prep(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
