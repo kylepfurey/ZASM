@@ -1,8 +1,8 @@
 // .c
-// Z Runtime Execution Function
+// ZASM Runtime Execution Function
 // by Kyle Furey
 
-#include <ZLang.h>
+#include <ZASM.h>
 
 /** Executes a .zac file at the given path, returning 0 or an error code from the program. */
 ZInt Zexecute(ZString path, ZUInt argc, const ZString argv[]) {
@@ -12,7 +12,7 @@ ZInt Zexecute(ZString path, ZUInt argc, const ZString argv[]) {
     ZProgram program;
     if (!ZProgram_new(&program, path, argc, argv)) {
         Zerror("Failed to start program!");
-        return ZLANG_ERROR;
+        return ZASM_ERROR;
     }
     ZInt result = ZProgram_execute(&program);
     ZProgram_delete(&program);

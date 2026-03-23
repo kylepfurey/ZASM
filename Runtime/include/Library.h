@@ -1,46 +1,46 @@
 // .h
-// Z Dynamic Library Class
+// ZASM Dynamic Library Class
 // by Kyle Furey
 
-#ifndef ZLANG_LIBRARY_H
-#define ZLANG_LIBRARY_H
+#ifndef ZASM_LIBRARY_H
+#define ZASM_LIBRARY_H
 
 #include <Vector.h>
 #include <Stack.h>
 
 /** Denotes that an FFI function is not a varadic function. */
-#define ZLANG_CALL_NO_VARADIC UINT_MAX
+#define ZASM_CALL_NO_VARADIC UINT_MAX
 
 /** Denotes that an FFI function uses the default OS ABI. */
-#define ZLANG_DEFAULT_ABI UINT_MAX
+#define ZASM_DEFAULT_ABI UINT_MAX
 
 /** Denotes at runtime that an FFI call is for libc. */
-#define ZLANG_FFI_LIBC UINT_MAX
+#define ZASM_FFI_LIBC UINT_MAX
 
 /**
  * Each enumerated primitive type.
- * Custom struct types follow at and after ZLANG_TYPE_STRUCT.
+ * Custom struct types follow at and after ZASM_TYPE_STRUCT.
  */
 enum {
-    ZLANG_TYPE_VOID = 0,
-    ZLANG_TYPE_BYTE = 1,
-    ZLANG_TYPE_SBYTE = 2,
-    ZLANG_TYPE_USHORT = 3,
-    ZLANG_TYPE_SHORT = 4,
-    ZLANG_TYPE_UINT = 5,
-    ZLANG_TYPE_INT = 6,
-    ZLANG_TYPE_ULONG = 7,
-    ZLANG_TYPE_LONG = 8,
-    ZLANG_TYPE_FLOAT = 9,
-    ZLANG_TYPE_DOUBLE = 10,
-    ZLANG_TYPE_PTR = 11,
-    ZLANG_TYPE_DECIMAL = 12,
-    ZLANG_TYPE_STRUCT = 13, // >= 13
+    ZASM_TYPE_VOID = 0,
+    ZASM_TYPE_BYTE = 1,
+    ZASM_TYPE_SBYTE = 2,
+    ZASM_TYPE_USHORT = 3,
+    ZASM_TYPE_SHORT = 4,
+    ZASM_TYPE_UINT = 5,
+    ZASM_TYPE_INT = 6,
+    ZASM_TYPE_ULONG = 7,
+    ZASM_TYPE_LONG = 8,
+    ZASM_TYPE_FLOAT = 9,
+    ZASM_TYPE_DOUBLE = 10,
+    ZASM_TYPE_PTR = 11,
+    ZASM_TYPE_DECIMAL = 12,
+    ZASM_TYPE_STRUCT = 13, // >= 13
 };
 
 /** A handle to a dynamic library. */
 typedef struct {
-#ifdef ZLANG_WINDOWS
+#ifdef ZASM_WINDOWS
 
     /** The handle to the .dll dynamic library. */
     HMODULE handle;
@@ -81,13 +81,13 @@ typedef ffi_type ZType;
 
 /** Metadata for a foreign function interface call. */
 typedef struct {
-    /** The ABI of this foreign function call. ZLANG_DEFAULT_ABI is for default ABI. */
+    /** The ABI of this foreign function call. ZASM_DEFAULT_ABI is for default ABI. */
     ZUInt abi;
 
     /** The total number of typed arguments. Argument type indicies follow this structure. */
     ZUInt fixedArgs;
 
-    /** The total number of varadic arguments. ZLANG_CALL_NO_VARADIC ignores this. */
+    /** The total number of varadic arguments. ZASM_CALL_NO_VARADIC ignores this. */
     ZUInt varArgs;
 
     /** The type index of the return type. */
@@ -97,13 +97,13 @@ typedef struct {
 #pragma pack(pop)
 
 /** Initializes a new dynamic library. "libc" loads the standard library. */
-ZLANG_API ZBool ZLibrary_new(ZLibrary *self, ZString name);
+ZASM_API ZBool ZLibrary_new(ZLibrary *self, ZString name);
 
 /** Returns a function pointer from a dynamic library via its name. */
-ZLANG_API ZFunc ZLibrary_find(ZLibrary *self, ZString name);
+ZASM_API ZFunc ZLibrary_find(ZLibrary *self, ZString name);
 
 /** Binds a new foreign function to the library. */
-ZLANG_API ZBool ZLibrary_bind(
+ZASM_API ZBool ZLibrary_bind(
     ZLibrary *self,
     ZString name,
     ZUInt abi,
@@ -114,9 +114,9 @@ ZLANG_API ZBool ZLibrary_bind(
 );
 
 /** Invokes the foreign function stored in the library with the given index. */
-ZLANG_API ZBool ZLibrary_call(ZLibrary *self, ZUInt index, ZStack *stack);
+ZASM_API ZBool ZLibrary_call(ZLibrary *self, ZUInt index, ZStack *stack);
 
 /** Cleans up all memory owned by a dynamic library. */
-ZLANG_API void ZLibrary_delete(ZLibrary *self);
+ZASM_API void ZLibrary_delete(ZLibrary *self);
 
-#endif // ZLANG_LIBRARY_H
+#endif // ZASM_LIBRARY_H

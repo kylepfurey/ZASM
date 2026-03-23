@@ -1,2 +1,2 @@
-# Z
-Z language compiler / assembler and runtime.
+# ZASM
+ZASM assembler and runtime.

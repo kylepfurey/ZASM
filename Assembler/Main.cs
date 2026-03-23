@@ -1,5 +1,5 @@
 ﻿// .cs
-// Z Entry Point
+// ZASM Entry Point
 // by Kyle Furey
 
 using System;
@@ -9,12 +9,12 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using ZLang;
+using ZASM;
 
 /** The class that contains the Main() function. */
 public static class Program
 {
-    /** Compiles a Z assembly, executable, or library. */
+    /** Compiles a ZASM assembly or library. */
     public static int Main(params string[] args)
     {
         int i = 0;
@@ -29,7 +29,7 @@ public static class Program
             return Print.ERROR;
         }
 
-        return Compiler.CompileFile(
+        return Assembler.AssembleFile(
             args.Length >= 2 ? args[^2] : args[^1],
             args.Length >= 2 ? args[^1] : null
         );

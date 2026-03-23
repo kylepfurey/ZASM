@@ -1,5 +1,5 @@
 // .cs
-// Z Assembler Functions
+// ZASM Assembler Functions
 // by Kyle Furey
 
 using System;
@@ -10,28 +10,28 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ZLang
+namespace ZASM
 {
-    /** Static functions for the Z assembler. */
+    /** Static functions for the ZASM assembler. */
     public static class Assembler
     {
         /// <summary>
-        /// Z assembly file extension.
+        /// ZASM assembly file extension.
         /// </summary>
         public const string ZASM_EXT = ".zasm";
 
         /// <summary>
-        /// Z application code file extension.
+        /// ZASM application code file extension.
         /// </summary>
         public const string ZAC_EXT = ".zac";
 
         /// <summary>
-        /// Z library file extension.
+        /// ZASM library file extension.
         /// </summary>
         public const string ZLIB_EXT = ".zlib";
 
         /// <summary>
-        /// Compiles the given .zasm file into a .zac executable or .zlib library.
+        /// Assembles the given .zasm file into a .zac executable or .zlib library.
         /// </summary>
         public static int AssembleFile(string source, string? target = null)
         {
@@ -45,10 +45,8 @@ namespace ZLang
                 {
                     case ZASM_EXT:
                         break;
-                    case Compiler.ZCODE_EXT:
-                        return Compiler.CompileFile(source, target);
                     default:
-                        Print.Error("Invalid assembly source extension! { .zasm, .zcode }");
+                        Print.Error("Invalid assembly source extension! { .zasm }");
                         return Print.ERROR;
                 }
 
@@ -87,7 +85,7 @@ namespace ZLang
         }
 
         /// <summary>
-        /// Assembles the given string into a Z binary.
+        /// Assembles the given string into a ZASM binary.
         /// </summary>
         public static byte[]? AssembleString(string source)
         {

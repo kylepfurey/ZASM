@@ -1,8 +1,8 @@
 // .c
-// Z File Stream Class
+// ZASM File Stream Class
 // by Kyle Furey
 
-#include <ZLang.h>
+#include <ZASM.h>
 
 /** Initializes a new file stream. */
 ZBool ZFileStream_new(ZFileStream *self, ZString path, ZULong globalOffset) {
@@ -10,7 +10,7 @@ ZBool ZFileStream_new(ZFileStream *self, ZString path, ZULong globalOffset) {
     Zassert(self != NULL, "<self> was NULL!");
     FILE *file = fopen(path, "rb");
     if (file == NULL) {
-        ZString home = getenv(ZLANG_HOME_VAR);
+        ZString home = getenv(ZASM_HOME_VAR);
         if (home == NULL) {
             Zerror("File not found in directory!");
             return false;
@@ -23,7 +23,7 @@ ZBool ZFileStream_new(ZFileStream *self, ZString path, ZULong globalOffset) {
             return false;
         }
         memcpy(buffer, home, homeLen);
-        buffer[homeLen] = ZLANG_PATH_SEPARATOR;
+        buffer[homeLen] = ZASM_PATH_SEPARATOR;
         memcpy(buffer + homeLen + 1, path, pathLen);
         buffer[homeLen + pathLen + 1] = '\0';
         file = fopen(buffer, "rb");
@@ -33,7 +33,7 @@ ZBool ZFileStream_new(ZFileStream *self, ZString path, ZULong globalOffset) {
             return false;
         }
     }
-    self->chunkSize = fread(self->chunk, 1, ZLANG_CHUNK_SIZE, file);
+    self->chunkSize = fread(self->chunk, 1, ZASM_CHUNK_SIZE, file);
     if (self->chunkSize == 0 || self->chunk[0] != ZOPCODE_MAGIC) {
         Zerror("File does not start with the Z byte!");
         fclose(file);
@@ -61,19 +61,19 @@ ZBool ZFileStream_new(ZFileStream *self, ZString path, ZULong globalOffset) {
         return false;
     }
     self->fileSize = (ZULong) size;
-    if (fseek(file, ZLANG_CHUNK_SIZE, SEEK_SET) != 0) {
+    if (fseek(file, ZASM_CHUNK_SIZE, SEEK_SET) != 0) {
         Zerror("Could not set file stream to second chunk!");
         fclose(file);
         return false;
     }
     self->file = file;
-    if (!ZVector_new(&self->libraries, ZLANG_DEFAULT_CAPACITY)) {
+    if (!ZVector_new(&self->libraries, ZASM_DEFAULT_CAPACITY)) {
         Zerror("Could not initialize libraries vector!");
         fclose(file);
         self->file = NULL;
         return false;
     }
-    if (!ZVector_new(&self->types, ZLANG_DEFAULT_CAPACITY)) {
+    if (!ZVector_new(&self->types, ZASM_DEFAULT_CAPACITY)) {
         Zerror("Could not initialize types vector!");
         ZVector_delete(&self->libraries);
         fclose(file);
@@ -95,7 +95,7 @@ ZBool ZFileStream_nextByte(ZFileStream *self, ZByte *byte, ZCoroutine *coro) {
     if (self->byteIndex == self->chunkSize) {
         self->byteIndex = 0;
         ++self->chunkIndex;
-        self->chunkSize = fread(self->chunk, 1, ZLANG_CHUNK_SIZE, self->file);
+        self->chunkSize = fread(self->chunk, 1, ZASM_CHUNK_SIZE, self->file);
         if (self->chunkSize == 0) {
             return false;
         }
@@ -111,7 +111,7 @@ ZBool ZFileStream_nextArray(ZFileStream *self, ZUInt size, ZByte *array, ZCorout
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(self->file != NULL, "<self>'s FILE handle was NULL!");
     Zassert(array != NULL, "<array> was NULL!");
-    if (ZLANG_LITTLE_ENDIAN) {
+    if (ZASM_LITTLE_ENDIAN) {
         for (; size > 0; --size) {
             if (!ZFileStream_nextByte(self, array++, coro)) {
                 return false;
@@ -132,16 +132,16 @@ ZBool ZFileStream_nextArray(ZFileStream *self, ZUInt size, ZByte *array, ZCorout
 ZBool ZFileStream_jumpLocal(ZFileStream *self, ZULong localOffset) {
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(self->file != NULL, "<self>'s FILE handle was NULL!");
-    ZUInt chunk = (localOffset / ZLANG_CHUNK_SIZE) * ZLANG_CHUNK_SIZE;
+    ZUInt chunk = (localOffset / ZASM_CHUNK_SIZE) * ZASM_CHUNK_SIZE;
     if (self->chunkIndex != chunk) {
         self->chunkIndex = chunk;
         if (fseek(self->file, chunk, SEEK_SET) != 0) {
             Zerror("Invalid local jump!");
             return false;
         }
-        self->chunkSize = fread(self->chunk, 1, ZLANG_CHUNK_SIZE, self->file);
+        self->chunkSize = fread(self->chunk, 1, ZASM_CHUNK_SIZE, self->file);
     }
-    self->byteIndex = localOffset % ZLANG_CHUNK_SIZE;
+    self->byteIndex = localOffset % ZASM_CHUNK_SIZE;
     return self->byteIndex < self->chunkSize;
 }
 
@@ -175,7 +175,7 @@ ZFileStream *ZFileStream_jumpGlobal(
 /** Returns the current byte index of a file stream. */
 ZULong ZFileStream_localOffset(const ZFileStream *self) {
     Zassert(self != NULL, "<self> was NULL!");
-    return (self->chunkIndex * ZLANG_CHUNK_SIZE) + self->byteIndex;
+    return (self->chunkIndex * ZASM_CHUNK_SIZE) + self->byteIndex;
 }
 
 /** Returns the current global offset of a file stream. */
@@ -254,35 +254,35 @@ ZBool ZFileStream_putType(ZFileStream *self, ZUInt count, ZUInt elements[]) {
 ZType *ZFileStream_getType(const ZFileStream *self, ZUInt index) {
     Zassert(self != NULL, "<self> was NULL!");
     switch (index) {
-        case ZLANG_TYPE_VOID:
+        case ZASM_TYPE_VOID:
             return &ffi_type_void;
-        case ZLANG_TYPE_BYTE:
+        case ZASM_TYPE_BYTE:
             return &ffi_type_uint8;
-        case ZLANG_TYPE_SBYTE:
+        case ZASM_TYPE_SBYTE:
             return &ffi_type_sint8;
-        case ZLANG_TYPE_USHORT:
+        case ZASM_TYPE_USHORT:
             return &ffi_type_uint16;
-        case ZLANG_TYPE_SHORT:
+        case ZASM_TYPE_SHORT:
             return &ffi_type_sint16;
-        case ZLANG_TYPE_UINT:
+        case ZASM_TYPE_UINT:
             return &ffi_type_uint32;
-        case ZLANG_TYPE_INT:
+        case ZASM_TYPE_INT:
             return &ffi_type_sint32;
-        case ZLANG_TYPE_ULONG:
+        case ZASM_TYPE_ULONG:
             return &ffi_type_uint64;
-        case ZLANG_TYPE_LONG:
+        case ZASM_TYPE_LONG:
             return &ffi_type_sint64;
-        case ZLANG_TYPE_FLOAT:
+        case ZASM_TYPE_FLOAT:
             return &ffi_type_float;
-        case ZLANG_TYPE_DOUBLE:
+        case ZASM_TYPE_DOUBLE:
             return &ffi_type_double;
-        case ZLANG_TYPE_PTR:
+        case ZASM_TYPE_PTR:
             return &ffi_type_pointer;
-        case ZLANG_TYPE_DECIMAL:
+        case ZASM_TYPE_DECIMAL:
             return &ffi_type_longdouble;
         default:
             if (index < self->types.count) {
-                return (ZType *) ZVector_get(&self->types, index - ZLANG_TYPE_STRUCT);
+                return (ZType *) ZVector_get(&self->types, index - ZASM_TYPE_STRUCT);
             }
             return NULL;
     }

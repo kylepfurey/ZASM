@@ -1,9 +1,9 @@
 // .h
-// Z Opcode Functions
+// ZASM Opcode Functions
 // by Kyle Furey
 
-#ifndef ZLANG_OPCODE_H
-#define ZLANG_OPCODE_H
+#ifndef ZASM_OPCODE_H
+#define ZASM_OPCODE_H
 
 #include <Program.h>
 
@@ -69,318 +69,318 @@ enum {
     ZOPCODE_FLAGS_WIDTH_FOUR = 128,
 };
 
-/** The table of Z operation codes to functions. */
+/** The table of ZASM operation codes to functions. */
 extern ZBool (*const ZOpcode_TABLE[256])(ZProgram *, ZCoroutine *, ZFileStream *);
 
-/** Executes a Z program's next operation code. */
-ZLANG_API ZBool ZOpcode_nextCode(ZProgram *self);
+/** Executes a ZASM program's next operation code. */
+ZASM_API ZBool ZOpcode_nextCode(ZProgram *self);
 
 /** exit (void) */
-ZLANG_API ZBool ZOpcode_exit(
+ZASM_API ZBool ZOpcode_exit(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** load (size) */
-ZLANG_API ZBool ZOpcode_load(
+ZASM_API ZBool ZOpcode_load(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** lib (size) */
-ZLANG_API ZBool ZOpcode_lib(
+ZASM_API ZBool ZOpcode_lib(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** read (write, read, size) */
-ZLANG_API ZBool ZOpcode_read(
+ZASM_API ZBool ZOpcode_read(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** push (size) */
-ZLANG_API ZBool ZOpcode_push(
+ZASM_API ZBool ZOpcode_push(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** pop (size) */
-ZLANG_API ZBool ZOpcode_pop(
+ZASM_API ZBool ZOpcode_pop(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** move (write, read, size) */
-ZLANG_API ZBool ZOpcode_move(
+ZASM_API ZBool ZOpcode_move(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** set (write, read, size) */
-ZLANG_API ZBool ZOpcode_set(
+ZASM_API ZBool ZOpcode_set(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** get (write, read, size) */
-ZLANG_API ZBool ZOpcode_get(
+ZASM_API ZBool ZOpcode_get(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** put (write, read, size) */
-ZLANG_API ZBool ZOpcode_put(
+ZASM_API ZBool ZOpcode_put(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** ptr (write, read) */
-ZLANG_API ZBool ZOpcode_ptr(
+ZASM_API ZBool ZOpcode_ptr(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** jump (size) */
-ZLANG_API ZBool ZOpcode_jump(
+ZASM_API ZBool ZOpcode_jump(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** hop (size) */
-ZLANG_API ZBool ZOpcode_hop(
+ZASM_API ZBool ZOpcode_hop(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** call (size) */
-ZLANG_API ZBool ZOpcode_call(
+ZASM_API ZBool ZOpcode_call(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** ret (size) */
-ZLANG_API ZBool ZOpcode_ret(
+ZASM_API ZBool ZOpcode_ret(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** addr (write, read) */
-ZLANG_API ZBool ZOpcode_addr(
+ZASM_API ZBool ZOpcode_addr(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** eql (write, read, size) */
-ZLANG_API ZBool ZOpcode_eql(
+ZASM_API ZBool ZOpcode_eql(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** grtr (write, read, size) */
-ZLANG_API ZBool ZOpcode_grtr(
+ZASM_API ZBool ZOpcode_grtr(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** flip (write) */
-ZLANG_API ZBool ZOpcode_flip(
+ZASM_API ZBool ZOpcode_flip(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** if (read, size) */
-ZLANG_API ZBool ZOpcode_if(
+ZASM_API ZBool ZOpcode_if(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** coro (write, read, size) */
-ZLANG_API ZBool ZOpcode_coro(
+ZASM_API ZBool ZOpcode_coro(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** bind (read) */
-ZLANG_API ZBool ZOpcode_bind(
+ZASM_API ZBool ZOpcode_bind(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** yld (read) */
-ZLANG_API ZBool ZOpcode_yld(
+ZASM_API ZBool ZOpcode_yld(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** wait (read) */
-ZLANG_API ZBool ZOpcode_wait(
+ZASM_API ZBool ZOpcode_wait(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** cncl (read) */
-ZLANG_API ZBool ZOpcode_cncl(
+ZASM_API ZBool ZOpcode_cncl(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** kill (void) */
-ZLANG_API ZBool ZOpcode_kill(
+ZASM_API ZBool ZOpcode_kill(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** inc (write) */
-ZLANG_API ZBool ZOpcode_inc(
+ZASM_API ZBool ZOpcode_inc(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** dec (write) */
-ZLANG_API ZBool ZOpcode_dec(
+ZASM_API ZBool ZOpcode_dec(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** add (write, read, size) */
-ZLANG_API ZBool ZOpcode_add(
+ZASM_API ZBool ZOpcode_add(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** sub (write, read, size) */
-ZLANG_API ZBool ZOpcode_sub(
+ZASM_API ZBool ZOpcode_sub(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** mult (write, read, size) */
-ZLANG_API ZBool ZOpcode_mult(
+ZASM_API ZBool ZOpcode_mult(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** div (write, read, size) */
-ZLANG_API ZBool ZOpcode_div(
+ZASM_API ZBool ZOpcode_div(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** mod (write, read, size) */
-ZLANG_API ZBool ZOpcode_mod(
+ZASM_API ZBool ZOpcode_mod(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** and (write, read, size) */
-ZLANG_API ZBool ZOpcode_and(
+ZASM_API ZBool ZOpcode_and(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** or (write, read, size) */
-ZLANG_API ZBool ZOpcode_or(
+ZASM_API ZBool ZOpcode_or(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** not (write) */
-ZLANG_API ZBool ZOpcode_not(
+ZASM_API ZBool ZOpcode_not(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** xor (write, read, size) */
-ZLANG_API ZBool ZOpcode_xor(
+ZASM_API ZBool ZOpcode_xor(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** lshf (write, read, size) */
-ZLANG_API ZBool ZOpcode_lshf(
+ZASM_API ZBool ZOpcode_lshf(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** rshf (write, read, size) */
-ZLANG_API ZBool ZOpcode_rshf(
+ZASM_API ZBool ZOpcode_rshf(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** hash (write, read, size) */
-ZLANG_API ZBool ZOpcode_hash(
+ZASM_API ZBool ZOpcode_hash(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** int (write, read, size) */
-ZLANG_API ZBool ZOpcode_int(
+ZASM_API ZBool ZOpcode_int(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** uint (write, read, size) */
-ZLANG_API ZBool ZOpcode_uint(
+ZASM_API ZBool ZOpcode_uint(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** flt (write, read, size) */
-ZLANG_API ZBool ZOpcode_flt(
+ZASM_API ZBool ZOpcode_flt(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
 /** ffi (read, size) */
-ZLANG_API ZBool ZOpcode_ffi(
+ZASM_API ZBool ZOpcode_ffi(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file
 );
 
-#endif // ZLANG_OPCODE_H
+#endif // ZASM_OPCODE_H

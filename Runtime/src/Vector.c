@@ -1,8 +1,8 @@
 // .c
-// Z Vector Class
+// ZASM Vector Class
 // by Kyle Furey
 
-#include <ZLang.h>
+#include <ZASM.h>
 
 /** Initializes a new vector with the given capacity. */
 ZBool ZVector_new(ZVector *self, ZUInt capacity) {

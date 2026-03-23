@@ -1,11 +1,11 @@
 // .h
-// Z Runtime Library Includes
+// ZASM Runtime Library Includes
 // by Kyle Furey
 
-#ifndef ZLANG_H
-#define ZLANG_H
+#ifndef ZASM_H
+#define ZASM_H
 
-// Z RUNTIME LIBRARY
+// ZASM RUNTIME LIBRARY
 #include <External.h>
 #include <Export.h>
 #include <Types.h>
@@ -19,4 +19,4 @@
 #include <Opcode.h>
 #include <Library.h>
 
-#endif // ZLANG_H
+#endif // ZASM_H

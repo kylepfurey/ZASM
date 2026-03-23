@@ -1,21 +1,21 @@
 // .c
-// Z Dynamic Library Class
+// ZASM Dynamic Library Class
 // by Kyle Furey
 
-#include <ZLang.h>
+#include <ZASM.h>
 
 /** Initializes a new dynamic library. "libc" loads the standard library. */
 ZBool ZLibrary_new(ZLibrary *self, ZString name) {
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(name != NULL, "<name> was NULL!");
-    if (!ZVector_new(&self->ffi, ZLANG_DEFAULT_CAPACITY)) {
+    if (!ZVector_new(&self->ffi, ZASM_DEFAULT_CAPACITY)) {
         Zerror("Could not initialize dynamic library FFI vector!");
         return false;
     }
     ZULong nameLen = strlen(name);
     ZChar *buffer;
 
-#ifdef ZLANG_WINDOWS
+#ifdef ZASM_WINDOWS
 
     // *.dll
 
@@ -46,7 +46,7 @@ ZBool ZLibrary_new(ZLibrary *self, ZString name) {
     self->handle = LoadLibraryA(buffer);
     if (self->handle == NULL) {
         free(buffer);
-        ZString home = getenv(ZLANG_HOME_VAR);
+        ZString home = getenv(ZASM_HOME_VAR);
         if (home == NULL) {
             Zerror("Dynamic library not found in directory!");
             ZVector_delete(&self->ffi);
@@ -60,7 +60,7 @@ ZBool ZLibrary_new(ZLibrary *self, ZString name) {
             return false;
         }
         memcpy(buffer, home, homeLen);
-        buffer[homeLen] = ZLANG_PATH_SEPARATOR;
+        buffer[homeLen] = ZASM_PATH_SEPARATOR;
         memcpy(buffer + homeLen + 1, name, nameLen);
         ZULong len = homeLen + nameLen;
         buffer[++len] = '.';
@@ -82,9 +82,9 @@ ZBool ZLibrary_new(ZLibrary *self, ZString name) {
 
 #else
 
-#ifdef ZLANG_POSIX
+#ifdef ZASM_POSIX
 
-#ifdef ZLANG_MACOS
+#ifdef ZASM_MACOS
 
     // lib*.dylib
 
@@ -120,7 +120,7 @@ ZBool ZLibrary_new(ZLibrary *self, ZString name) {
     self->handle = dlopen(buffer, RTLD_NOW | RTLD_GLOBAL);
     if (self->handle == NULL) {
         free(buffer);
-        ZString home = getenv(ZLANG_HOME_VAR);
+        ZString home = getenv(ZASM_HOME_VAR);
         if (home == NULL) {
             Zerror("Dynamic library not found in directory!");
             ZVector_delete(&self->ffi);
@@ -134,7 +134,7 @@ ZBool ZLibrary_new(ZLibrary *self, ZString name) {
             return false;
         }
         memcpy(buffer, home, homeLen);
-        buffer[homeLen] = ZLANG_PATH_SEPARATOR;
+        buffer[homeLen] = ZASM_PATH_SEPARATOR;
         buffer[homeLen + 1] = 'l';
         buffer[homeLen + 2] = 'i';
         buffer[homeLen + 3] = 'b';
@@ -192,7 +192,7 @@ ZBool ZLibrary_new(ZLibrary *self, ZString name) {
     self->handle = dlopen(buffer, RTLD_NOW | RTLD_GLOBAL);
     if (self->handle == NULL) {
         free(buffer);
-        ZString home = getenv(ZLANG_HOME_VAR);
+        ZString home = getenv(ZASM_HOME_VAR);
         if (home == NULL) {
             Zerror("Dynamic library not found in directory!");
             ZVector_delete(&self->ffi);
@@ -206,7 +206,7 @@ ZBool ZLibrary_new(ZLibrary *self, ZString name) {
             return false;
         }
         memcpy(buffer, home, homeLen);
-        buffer[homeLen] = ZLANG_PATH_SEPARATOR;
+        buffer[homeLen] = ZASM_PATH_SEPARATOR;
         buffer[homeLen + 1] = 'l';
         buffer[homeLen + 2] = 'i';
         buffer[homeLen + 3] = 'b';
@@ -245,13 +245,13 @@ ZFunc ZLibrary_find(ZLibrary *self, ZString name) {
     Zassert(name != NULL, "<name> was NULL!");
     Zassert(self->handle != NULL, "<self>'s handle was NULL!");
 
-#ifdef ZLANG_WINDOWS
+#ifdef ZASM_WINDOWS
 
     return (ZFunc) GetProcAddress(self->handle, name);
 
 #else
 
-#ifdef ZLANG_POSIX
+#ifdef ZASM_POSIX
 
     return (ZFunc) dlsym(self->handle, name);
 
@@ -276,9 +276,9 @@ ZBool ZLibrary_bind(
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(name != NULL, "<name> was NULL!");
     Zassert(returnType != NULL, "<returnType> was NULL! Pass &ffi_type_void for void!");
-    ZUInt argCount = varArgs == ZLANG_CALL_NO_VARADIC ? fixedArgs : fixedArgs + varArgs;
+    ZUInt argCount = varArgs == ZASM_CALL_NO_VARADIC ? fixedArgs : fixedArgs + varArgs;
     Zassert(argTypes != NULL || argCount == 0, "<argTypes> was NULL when args > 0!");
-    abi = abi == ZLANG_DEFAULT_ABI ? FFI_DEFAULT_ABI : abi;
+    abi = abi == ZASM_DEFAULT_ABI ? FFI_DEFAULT_ABI : abi;
     ZFFI *ffi = (ZFFI *) malloc(sizeof(ZFFI));
     if (ffi == NULL) {
         Zerror("Could not allocate FFI binding!");
@@ -294,7 +294,7 @@ ZBool ZLibrary_bind(
     memcpy(argTypes, src, argCount * sizeof(ZType *));
     argTypes[argCount] = NULL;
     ffi_status result;
-    if (varArgs == ZLANG_CALL_NO_VARADIC) {
+    if (varArgs == ZASM_CALL_NO_VARADIC) {
         result = ffi_prep_cif(
             &ffi->cif,
             (ffi_abi) abi,
@@ -398,13 +398,13 @@ void ZLibrary_delete(ZLibrary *self) {
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(self->handle != NULL, "<self>'s handle was NULL!");
 
-#ifdef ZLANG_WINDOWS
+#ifdef ZASM_WINDOWS
 
     FreeLibrary(self->handle);
 
 #else
 
-#ifdef ZLANG_POSIX
+#ifdef ZASM_POSIX
 
     dlclose(self->handle);
 

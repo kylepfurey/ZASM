@@ -1,15 +1,15 @@
 // .c
-// Z Program Class
+// ZASM Program Class
 // by Kyle Furey
 
-#include <ZLang.h>
+#include <ZASM.h>
 
-#ifdef ZLANG_SIGINT
+#ifdef ZASM_SIGINT
 
-/** A pointer to the last opened Z program. This is solely used for SIGINT. */
+/** A pointer to the last opened ZASM program. This is solely used for SIGINT. */
 ZProgram *ZProgram_instance = NULL;
 
-/** Z program SIGINT handler. */
+/** ZASM program SIGINT handler. */
 void ZProgram_kill(int code) {
     printf("\n");
     Zlog("SIGINT.");
@@ -27,7 +27,7 @@ ZULong ZTime(ZUInt offsetMs) {
     return ms + offsetMs;
 }
 
-/** Initializes a new Z program. */
+/** Initializes a new ZASM program. */
 ZBool ZProgram_new(ZProgram *self, ZString path, ZUInt argc, const ZString argv[]) {
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(path != NULL, "<path> was NULL!");
@@ -54,7 +54,7 @@ ZBool ZProgram_new(ZProgram *self, ZString path, ZUInt argc, const ZString argv[
             return false;
         }
     }
-    if (!ZVector_new(&self->coroutines, ZLANG_DEFAULT_CAPACITY)) {
+    if (!ZVector_new(&self->coroutines, ZASM_DEFAULT_CAPACITY)) {
         Zerror("Could not initialize coroutine vector!");
         return false;
     }
@@ -79,7 +79,7 @@ ZBool ZProgram_new(ZProgram *self, ZString path, ZUInt argc, const ZString argv[
     }
     self->current = 0;
     self->next = 1;
-    if (!ZVector_new(&self->files, ZLANG_DEFAULT_CAPACITY)) {
+    if (!ZVector_new(&self->files, ZASM_DEFAULT_CAPACITY)) {
         Zerror("Could not initialize fileStream vector!");
         ZCoroutine_delete(main);
         free(main);
@@ -125,7 +125,7 @@ ZBool ZProgram_new(ZProgram *self, ZString path, ZUInt argc, const ZString argv[
         return false;
     }
 
-#ifdef ZLANG_SIGINT
+#ifdef ZASM_SIGINT
 
     ZProgram_instance = self;
     signal(SIGINT, (__sighandler_t) ZProgram_kill);
@@ -135,7 +135,7 @@ ZBool ZProgram_new(ZProgram *self, ZString path, ZUInt argc, const ZString argv[
     return true;
 }
 
-/** Starts a new coroutine in a Z program. */
+/** Starts a new coroutine in a ZASM program. */
 ZBool ZProgram_startCoroutine(
     ZProgram *self,
     ZUInt handleStart,
@@ -179,10 +179,10 @@ ZBool ZProgram_startCoroutine(
     return true;
 }
 
-/** Stops a coroutine by its index in a Z program. Only "fails" on stopping main. */
+/** Stops a coroutine by its index in a ZASM program. Only "fails" on stopping main. */
 ZBool ZProgram_stopCoroutine(ZProgram *self, ZUInt index, ZBool dispatch) {
     Zassert(self != NULL, "<self> was NULL!");
-    if (index == ZLANG_COROUTINE_MAIN) {
+    if (index == ZASM_COROUTINE_MAIN) {
         return false;
     }
     if (index >= self->coroutines.count) {
@@ -208,7 +208,7 @@ ZBool ZProgram_stopCoroutine(ZProgram *self, ZUInt index, ZBool dispatch) {
     return true;
 }
 
-/** Loads a .zlib file at the given path into the Z program. */
+/** Loads a .zlib file at the given path into the ZASM program. */
 ZBool ZProgram_loadLibrary(ZProgram *self, ZString path) {
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(path != NULL, "<path> was NULL!");
@@ -258,7 +258,7 @@ ZBool ZProgram_loadLibrary(ZProgram *self, ZString path) {
     return true;
 }
 
-/** Binds a foreign function to the Z program. */
+/** Binds a foreign function to the ZASM program. */
 ZBool ZProgram_bind(
     ZProgram *self,
     ZCoroutine *coro,
@@ -268,7 +268,7 @@ ZBool ZProgram_bind(
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(file != NULL, "<file> was NULL!");
     ZLibrary *lib;
-    if (library == ZLANG_FFI_LIBC) {
+    if (library == ZASM_FFI_LIBC) {
         lib = &self->libc;
     } else if (library >= file->libraries.count) {
         lib = (ZLibrary *) ZVector_get(&file->libraries, library);
@@ -303,7 +303,7 @@ ZBool ZProgram_bind(
         free(str);
         return false;
     }
-    ZUInt argCount = call.varArgs == ZLANG_CALL_NO_VARADIC ? call.fixedArgs : call.fixedArgs + call.varArgs;
+    ZUInt argCount = call.varArgs == ZASM_CALL_NO_VARADIC ? call.fixedArgs : call.fixedArgs + call.varArgs;
     ZUInt *argIndicies = (ZUInt *) malloc((argCount + 1) * sizeof(ZUInt));
     if (argIndicies == NULL) {
         Zerror("Could not allocate FFI binding argument indicies!");
@@ -354,7 +354,7 @@ ZBool ZProgram_bind(
     return true;
 }
 
-/** Calls a foreign function from the Z program's libraries. */
+/** Calls a foreign function from the ZASM program's libraries. */
 ZBool ZProgram_call(
     ZProgram *self,
     ZCoroutine *coro,
@@ -366,7 +366,7 @@ ZBool ZProgram_call(
     Zassert(file != NULL, "<file> was NULL!");
     Zassert(coro != NULL, "<coro> was NULL!");
     ZLibrary *lib;
-    if (library == ZLANG_FFI_LIBC) {
+    if (library == ZASM_FFI_LIBC) {
         lib = &self->libc;
     } else if (library >= file->libraries.count) {
         lib = (ZLibrary *) ZVector_get(&file->libraries, library);
@@ -381,7 +381,7 @@ ZBool ZProgram_call(
     return true;
 }
 
-/** Executes the next coroutine in a Z program. Returns whether the program can continue. */
+/** Executes the next coroutine in a ZASM program. Returns whether the program can continue. */
 ZBool ZProgram_step(ZProgram *self) {
     Zassert(self != NULL, "<self> was NULL!");
     ZCoroutine *coro;
@@ -395,7 +395,7 @@ ZBool ZProgram_step(ZProgram *self) {
         (coro->await > 0 && (ZCoroutine *) ZVector_get(&self->coroutines, coro->await) != NULL)
     );
     ZULong current = ZTime(0);
-    ZULong time = ZTime(ZLANG_COROUTINE_DELAY_MS);
+    ZULong time = ZTime(ZASM_COROUTINE_DELAY_MS);
     while (current < time) {
         if (!ZOpcode_nextCode(self)) {
             return false;
@@ -413,7 +413,7 @@ ZBool ZProgram_step(ZProgram *self) {
     return true;
 }
 
-/** Runs a Z program until completion. Returns the result of main. */
+/** Runs a ZASM program until completion. Returns the result of main. */
 ZInt ZProgram_execute(ZProgram *self) {
     Zassert(self != NULL, "<self> was NULL!");
     while (ZProgram_step(self)) {
@@ -422,7 +422,7 @@ ZInt ZProgram_execute(ZProgram *self) {
     return *(ZInt *) main->stack.bottom;
 }
 
-/** Cleans up all memory owned by a Z program. */
+/** Cleans up all memory owned by a ZASM program. */
 void ZProgram_delete(ZProgram *self) {
     Zassert(self != NULL, "<self> was NULL!");
     ZLibrary_delete(&self->libc);
@@ -443,7 +443,7 @@ void ZProgram_delete(ZProgram *self) {
     }
     ZVector_delete(&self->coroutines);
 
-#ifdef ZLANG_SIGINT
+#ifdef ZASM_SIGINT
 
     ZProgram_instance = NULL;
     signal(SIGINT, NULL);

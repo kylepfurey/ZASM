@@ -1,76 +1,76 @@
 // .h
-// Z Export Macros
+// ZASM Export Macros
 // by Kyle Furey
 
-#ifndef ZLANG_EXPORT_H
-#define ZLANG_EXPORT_H
+#ifndef ZASM_EXPORT_H
+#define ZASM_EXPORT_H
 
-/** The current Z runtime version. */
-#define ZLANG_VER 1.0
+/** The current ZASM runtime version. */
+#define ZASM_VER 1.0
 
-/** Z "home" environment variable. */
-#define ZLANG_HOME_VAR "Z_HOME"
+/** ZASM "home" environment variable. */
+#define ZASM_HOME_VAR "ZASM_HOME"
 
 #if defined(_WIN32) || defined(_WIN64)
 
 /** Compiled to Windows. */
-#define ZLANG_WINDOWS
+#define ZASM_WINDOWS
 
 #elif defined(__APPLE__)
 
 /** Compiled to MacOS. */
-#define ZLANG_MACOS
+#define ZASM_MACOS
 
 /** POSIX support. */
-#define ZLANG_POSIX
+#define ZASM_POSIX
 
 #else
 
 /** Compiled to Linux. */
-#define ZLANG_LINUX
+#define ZASM_LINUX
 
 /** POSIX support. */
-#define ZLANG_POSIX
+#define ZASM_POSIX
 
 #endif
 
-#ifdef ZLANG_WINDOWS
+#ifdef ZASM_WINDOWS
 
 /** File path separator. */
-#define ZLANG_PATH_SEPARATOR '\\'
+#define ZASM_PATH_SEPARATOR '\\'
 
-#ifdef ZLANG_EXPORTS
+#ifdef ZASM_EXPORTS
 
 /** Windows export. */
-#define ZLANG_API __declspec(dllexport) inline
+#define ZASM_API __declspec(dllexport) inline
 
-/** Defined if SIGINT is a valid way to kill a Z program. */
-#define ZLANG_SIGINT
+/** Defined if SIGINT is a valid way to kill a ZASM program. */
+#define ZASM_SIGINT
 
 #else
 
 /** Windows import. */
-#define ZLANG_API __declspec(dllimport) inline
+#define ZASM_API __declspec(dllimport) inline
 
 #endif
 
 #else
 
 /** File path separator. */
-#define ZLANG_PATH_SEPARATOR '/'
+#define ZASM_PATH_SEPARATOR '/'
 
-#ifdef ZLANG_EXPORTS
+#ifdef ZASM_EXPORTS
 
 /** MacOS / Linux export. */
-#define ZLANG_API __attribute__((visibility("default"))) inline
+#define ZASM_API __attribute__((visibility("default"))) inline
 
 #else
 
 /** Fallback. */
-#define ZLANG_API inline
+#define ZASM_API inline
 
-/** Defined if SIGINT is a valid way to kill a Z program. */
-#define ZLANG_SIGINT
+/** Defined if SIGINT is a valid way to kill a ZASM program. */
+#define ZASM_SIGINT
 
 #endif
 
@@ -78,9 +78,9 @@
 
 #ifdef _DEBUG
 
-/** Z Runtime Debugging */
-#define ZLANG_DEBUG
+/** ZASM Runtime Debugging */
+#define ZASM_DEBUG
 
 #endif
 
-#endif // ZLANG_EXPORT_H
+#endif // ZASM_EXPORT_H

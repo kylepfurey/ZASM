@@ -1,5 +1,5 @@
 // .cs
-// Z Error Logging Functions
+// ZASM Error Logging Functions
 // by Kyle Furey
 
 using System;
@@ -10,27 +10,27 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ZLang
+namespace ZASM
 {
     /** Static functions for logging errors. */
     public static class Print
     {
         /// <summary>
-        /// Returned when the Z compiler executes OK.
+        /// Returned when the ZASM assembler executes OK.
         /// </summary>
         public const int OK = 0;
 
         /// <summary>
-        /// Returned when the Z compiler encounters an error.
+        /// Returned when the ZASM assembler encounters an error.
         /// </summary>
         public const int ERROR = 'Z';
 
         /// <summary>
-        /// Logs a message to the Z compiler.
+        /// Logs a message to the ZASM assembler.
         /// </summary>
         public static void Log(params object[] msg)
         {
-            Console.Out.Write("Z LOG:\t\t");
+            Console.Out.Write("ZASM LOG:\t");
 
             foreach (var obj in msg)
             {
@@ -41,11 +41,11 @@ namespace ZLang
         }
 
         /// <summary>
-        /// Logs a warning to the Z compiler.
+        /// Logs a warning to the ZASM assembler.
         /// </summary>
         public static void Warning(params object[] msg)
         {
-            Console.Out.Write("Z WARNING:\t");
+            Console.Out.Write("ZASM WARNING:\t");
 
             foreach (var obj in msg)
             {
@@ -56,11 +56,11 @@ namespace ZLang
         }
 
         /// <summary>
-        /// Logs an error to the Z compiler.
+        /// Logs an error to the ZASM assembler.
         /// </summary>
         public static void Error(params object[] msg)
         {
-            Console.Error.Write("Z ERROR:\t");
+            Console.Error.Write("ZASM ERROR:\t");
 
             foreach (var obj in msg)
             {

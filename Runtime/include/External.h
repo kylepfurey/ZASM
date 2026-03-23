@@ -1,9 +1,9 @@
 // .h
-// Z External Library Includes
+// ZASM External Library Includes
 // by Kyle Furey
 
-#ifndef ZLANG_EXTERNAL_H
-#define ZLANG_EXTERNAL_H
+#ifndef ZASM_EXTERNAL_H
+#define ZASM_EXTERNAL_H
 
 // MACROS
 #include <Export.h>
@@ -18,20 +18,20 @@
 #include <ctype.h>
 #include <time.h>
 
-#ifdef ZLANG_SIGINT
+#ifdef ZASM_SIGINT
 
 #include <signal.h>
 
 #endif
 
 // EXTERNAL LIBRARIES
-#ifdef ZLANG_WINDOWS
+#ifdef ZASM_WINDOWS
 
 #include <windows.h>
 
 #endif
 
-#ifdef ZLANG_POSIX
+#ifdef ZASM_POSIX
 
 #include <dlfcn.h>
 
@@ -39,4 +39,4 @@
 
 #include <ffi.h>
 
-#endif // ZLANG_EXTERNAL_H
+#endif // ZASM_EXTERNAL_H

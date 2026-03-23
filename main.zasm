@@ -1,24 +1,24 @@
 ; .zasm
-; Z Entry Point
+; ZASM Entry Point
 ; by Kyle Furey
 
 ; Opcode legend.
-; op write read size
+; op write?, read?, size?
 
 ; C standard library printf().
-ext libc int printf(*, ...)             ; Link to libc printf() function
+ext libc, "int printf(*, ...)"          ; Link to libc printf() function
 
 ; The entry point of the program.
 main:
     push size(msg)                      ; Push Hello world! string to stack
-    load size(msg) msg size(msg)        ; Load Hello world! into string
+    load size(msg), msg, size(msg)      ; Load Hello world! into string
     push int                            ; Push int return to stack
     push *                              ; Push pointer argument to stack
-    ptr  * (* + int + size(msg))        ; Store pointer to Hello world! string
+    ptr  *, (* + int + size(msg))       ; Store pointer to Hello world! string
     ffi  printf                         ; FFI call printf(), pops arguments
     pop  int                            ; Pop int return from stack
     pop  size(msg)                      ; Pop Hello world! string from stack
     exit                                ; End program
 
 ; Hello world! string.
-str msg "Hello world!"                  ; Embed Hello world! into application code, address named "msg"
+str msg, "Hello world!"                 ; Embed Hello world! into application code, address named "msg"

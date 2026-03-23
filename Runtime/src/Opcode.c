@@ -1,10 +1,10 @@
 // .c
-// Z Opcode Functions
+// ZASM Opcode Functions
 // by Kyle Furey
 
-#include <ZLang.h>
+#include <ZASM.h>
 
-/** The table of Z operation codes to functions. */
+/** The table of ZASM operation codes to functions. */
 ZBool (*const ZOpcode_TABLE[256])(ZProgram *, ZCoroutine *, ZFileStream *) = {
     [ZOPCODE_exit] = ZOpcode_exit,
     [ZOPCODE_load] = ZOpcode_load,
@@ -52,7 +52,7 @@ ZBool (*const ZOpcode_TABLE[256])(ZProgram *, ZCoroutine *, ZFileStream *) = {
     [ZOPCODE_ffi] = ZOpcode_ffi,
 };
 
-/** Executes a Z program's next operation code. */
+/** Executes a ZASM program's next operation code. */
 ZBool ZOpcode_nextCode(ZProgram *self) {
     Zassert(self != NULL, "<self> was NULL!");
     ZCoroutine *coro = (ZCoroutine *) ZVector_get(&self->coroutines, self->current);

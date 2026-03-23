@@ -1,23 +1,23 @@
 // .h
-// Z File Stream Class
+// ZASM File Stream Class
 // by Kyle Furey
 
-#ifndef ZLANG_FILESTREAM_H
-#define ZLANG_FILESTREAM_H
+#ifndef ZASM_FILESTREAM_H
+#define ZASM_FILESTREAM_H
 
 #include <Coroutine.h>
 #include <Library.h>
 
 /** The size of a single file chunk loaded into memory. */
-#define ZLANG_CHUNK_SIZE 1024
+#define ZASM_CHUNK_SIZE 1024
 
 /** Evaluates whether the runtime is using little-endian binary. */
-#define ZLANG_LITTLE_ENDIAN (*(ZByte *) &(ZByte){1} == 1)
+#define ZASM_LITTLE_ENDIAN (*(ZByte *) &(ZByte){1} == 1)
 
 /** A handle to a file used to iterate its memory in chunks. */
 typedef struct {
     /** The file chunk buffer. */
-    ZByte chunk[ZLANG_CHUNK_SIZE];
+    ZByte chunk[ZASM_CHUNK_SIZE];
 
     /** The cached global offset of this file in virtual memory. */
     ZULong globalOffset;
@@ -45,19 +45,19 @@ typedef struct {
 } ZFileStream;
 
 /** Initializes a new file stream. */
-ZLANG_API ZBool ZFileStream_new(ZFileStream *self, ZString path, ZULong globalOffset);
+ZASM_API ZBool ZFileStream_new(ZFileStream *self, ZString path, ZULong globalOffset);
 
 /** Outputs the next byte of a file stream, iterating chunks when needed. */
-ZLANG_API ZBool ZFileStream_nextByte(ZFileStream *self, ZByte *byte, ZCoroutine *coro);
+ZASM_API ZBool ZFileStream_nextByte(ZFileStream *self, ZByte *byte, ZCoroutine *coro);
 
 /** Outputs an array of bytes from a file stream, iterating chunks when needed. */
-ZLANG_API ZBool ZFileStream_nextArray(ZFileStream *self, ZUInt size, ZByte *array, ZCoroutine *coro);
+ZASM_API ZBool ZFileStream_nextArray(ZFileStream *self, ZUInt size, ZByte *array, ZCoroutine *coro);
 
 /** Jumps to the given local offset in a file stream. */
-ZLANG_API ZBool ZFileStream_jumpLocal(ZFileStream *self, ZULong localOffset);
+ZASM_API ZBool ZFileStream_jumpLocal(ZFileStream *self, ZULong localOffset);
 
 /** Jumps and returns the file stream at the given global offset in an array of file streams. */
-ZLANG_API ZFileStream *ZFileStream_jumpGlobal(
+ZASM_API ZFileStream *ZFileStream_jumpGlobal(
     ZUInt fileCount,
     ZFileStream *files[],
     ZULong globalOffset,
@@ -65,24 +65,24 @@ ZLANG_API ZFileStream *ZFileStream_jumpGlobal(
 );
 
 /** Returns the current local offset of a file stream. */
-ZLANG_API ZULong ZFileStream_localOffset(const ZFileStream *self);
+ZASM_API ZULong ZFileStream_localOffset(const ZFileStream *self);
 
 /** Returns the current global offset of a file stream. */
-ZLANG_API ZULong ZFileStream_globalOffset(const ZFileStream *self);
+ZASM_API ZULong ZFileStream_globalOffset(const ZFileStream *self);
 
 /** Returns whether a global offset is in range of a file stream. */
-ZLANG_API ZBool ZFileStream_inRange(const ZFileStream *self, ZULong globalOffset);
+ZASM_API ZBool ZFileStream_inRange(const ZFileStream *self, ZULong globalOffset);
 
 /** Loads a dynamic library with the given name into the file stream. */
-ZLANG_API ZBool ZFileStream_loadLibrary(ZFileStream *self, ZString name);
+ZASM_API ZBool ZFileStream_loadLibrary(ZFileStream *self, ZString name);
 
 /** Stores a new struct type in the file stream. */
-ZLANG_API ZBool ZFileStream_putType(ZFileStream *self, ZUInt count, ZUInt elements[]);
+ZASM_API ZBool ZFileStream_putType(ZFileStream *self, ZUInt count, ZUInt elements[]);
 
 /** Returns a pointer to the file stream type with the given index. */
-ZLANG_API ZType *ZFileStream_getType(const ZFileStream *self, ZUInt index);
+ZASM_API ZType *ZFileStream_getType(const ZFileStream *self, ZUInt index);
 
 /** Cleans up all memory owned by a file stream. */
-ZLANG_API void ZFileStream_delete(ZFileStream *self);
+ZASM_API void ZFileStream_delete(ZFileStream *self);
 
-#endif // ZLANG_FILESTREAM_H
+#endif // ZASM_FILESTREAM_H

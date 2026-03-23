@@ -1,22 +1,22 @@
 // .h
-// Z Error Logging Macros
+// ZASM Error Logging Macros
 // by Kyle Furey
 
-#ifndef ZLANG_ERROR_H
-#define ZLANG_ERROR_H
+#ifndef ZASM_ERROR_H
+#define ZASM_ERROR_H
 
 #include <Types.h>
 
-/** Returned when the Z runtime encounters an error. */
-#define ZLANG_ERROR 'Z'
+/** Returned when the ZASM runtime encounters an error. */
+#define ZASM_ERROR 'Z'
 
-#ifdef ZLANG_DEBUG
+#ifdef ZASM_DEBUG
 
-/** Logs a message to the Z runtime when debugging. */
+/** Logs a message to the ZASM runtime when debugging. */
 #define Zlog(...)\
 do {\
-    fprintf(stdout, "Z LOG:\t\t");\
-    fprintf(stderr, "%s() - ", __func__);\
+    fprintf(stdout, "ZASM LOG:\t");\
+    fprintf(stdout, "%s() - ", __func__);\
     fprintf(stdout, __VA_ARGS__);\
     fprintf(stdout, "\n");\
 } while (false)
@@ -28,12 +28,12 @@ do {\
 
 #endif
 
-#ifdef ZLANG_DEBUG
+#ifdef ZASM_DEBUG
 
-/** Logs an error to the Z runtime when debugging. */
+/** Logs an error to the ZASM runtime when debugging. */
 #define Zerror(...)\
 do {\
-    fprintf(stderr, "Z ERROR:\t");\
+    fprintf(stderr, "ZASM ERROR:\t");\
     fprintf(stderr, "%s() - ", __func__);\
     fprintf(stderr, __VA_ARGS__);\
     fprintf(stderr, "\n");\
@@ -46,19 +46,19 @@ do {\
 
 #endif
 
-#ifdef ZLANG_DEBUG
+#ifdef ZASM_DEBUG
 
-/** Crashes the Z runtime with the given message msg if cond is false. */
+/** Crashes the ZASM runtime with the given message msg if cond is false. */
 #define Zassert(cond, msg)\
 if (!(cond))\
 fprintf(\
     stderr,\
-    "Z ASSERTION FAILED:\tFunc %s() - Line %i - %s\n",\
+    "ZASM ASSERTION FAILED:\tFunc %s() - Line %i - %s\n",\
     __func__,\
     __LINE__,\
     (msg)\
 ),\
-exit(ZLANG_ERROR)
+exit(ZASM_ERROR)
 
 #else
 
@@ -67,4 +67,4 @@ exit(ZLANG_ERROR)
 
 #endif
 
-#endif // ZLANG_ERROR_H
+#endif // ZASM_ERROR_H

@@ -1,8 +1,8 @@
 // .c
-// Z Stack Class
+// ZASM Stack Class
 // by Kyle Furey
 
-#include <ZLang.h>
+#include <ZASM.h>
 
 /** Initializes a new stack. This does not need to be deleted. */
 ZBool ZStack_new(ZStack *self, ZUInt pushed) {
@@ -14,7 +14,7 @@ ZBool ZStack_new(ZStack *self, ZUInt pushed) {
 /** Pushes bytes to the stack. */
 ZBool ZStack_push(ZStack *self, ZUInt size) {
     Zassert(self != NULL, "<self> was NULL!");
-    if (self->top + size > self->bottom + ZLANG_STACK_SIZE) {
+    if (self->top + size > self->bottom + ZASM_STACK_SIZE) {
         Zerror("Stack overflow!");
         return false;
     }

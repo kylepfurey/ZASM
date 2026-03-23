@@ -1,16 +1,16 @@
 // .c
-// Z Runtime Entry Point
+// ZASM Runtime Entry Point
 // by Kyle Furey
 
-#include <ZLang.h>
+#include <ZASM.h>
 
-/** Executes a Z program with arguments. */
+/** Executes a ZASM program with arguments. */
 int main(int argc, char *argv[]) {
     Zassert(argv != NULL, "<argv> was NULL!");
     Zassert(argv[argc] == NULL, "<argv> was not null-terminated!");
     if (argc <= 0) {
         Zerror("No file was given!");
-        return ZLANG_ERROR;
+        return ZASM_ERROR;
     }
     return Zexecute(
         (ZString) (argv[argc - 1]),

@@ -1,11 +1,11 @@
 # .txt
-# Z CMake Configuration
+# ZASM CMake Configuration
 # by Kyle Furey
 
 # Initialize CMake with vcpkg (if Windows)
 # set(CMAKE_TOOLCHAIN_FILE "$ENV{USERPROFILE}/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
 cmake_minimum_required(VERSION 3.16)
-project(ZRuntimeLib C)
+project(libZASM C)
 
 # Set C compiler version
 set(CMAKE_C_STANDARD 99)
@@ -17,9 +17,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/lib)
 
-# Build Z Runtime Library
-add_library(ZRuntimeLib SHARED
-        ${CMAKE_SOURCE_DIR}/include/ZLang.h
+# Build ZASM Runtime Library
+add_library(libZASM SHARED
+        ${CMAKE_SOURCE_DIR}/include/ZASM.h
         ${CMAKE_SOURCE_DIR}/include/External.h
         ${CMAKE_SOURCE_DIR}/include/Export.h
         ${CMAKE_SOURCE_DIR}/include/Types.h
@@ -42,16 +42,13 @@ add_library(ZRuntimeLib SHARED
         ${CMAKE_SOURCE_DIR}/src/Library.c
 )
 
-# Rename the Z Runtime Library
-set_target_properties(ZRuntimeLib PROPERTIES OUTPUT_NAME "ZLang")
-
 # Set include directory and build macro
-target_include_directories(ZRuntimeLib PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_compile_definitions(ZRuntimeLib PUBLIC
+target_include_directories(libZASM PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_compile_definitions(libZASM PUBLIC
         $<$<CONFIG:Debug>:_DEBUG>
 )
-target_compile_definitions(ZRuntimeLib PRIVATE
-        ZLANG_EXPORTS
+target_compile_definitions(libZASM PRIVATE
+        ZASM_EXPORTS
 )
 
 # Find external libraries
@@ -59,19 +56,19 @@ find_package(PkgConfig REQUIRED)                # Linux
 pkg_check_modules(LIBFFI REQUIRED libffi)       # Linux
 
 # Include external libraries
-target_include_directories(ZRuntimeLib PUBLIC
+target_include_directories(libZASM PUBLIC
         ${LIBFFI_INCLUDE_DIRS}
 )
 
-# Link external libraries to Z Runtime Library
-target_link_libraries(ZRuntimeLib PUBLIC
+# Link external libraries to ZASM Runtime Library
+target_link_libraries(libZASM PUBLIC
         #libffi::libffi         # Windows
         ${LIBFFI_LIBRARIES}     # Linux
 )
 
-# Build Z Runtime Executable
-add_executable(ZRuntimeExe
-        ${CMAKE_SOURCE_DIR}/include/ZLang.h
+# Build ZASM Runtime Executable
+add_executable(ZASM
+        ${CMAKE_SOURCE_DIR}/include/ZASM.h
         ${CMAKE_SOURCE_DIR}/include/External.h
         ${CMAKE_SOURCE_DIR}/include/Export.h
         ${CMAKE_SOURCE_DIR}/include/Types.h
@@ -96,21 +93,21 @@ add_executable(ZRuntimeExe
 )
 
 # Set include directory and build macro
-target_include_directories(ZRuntimeExe PRIVATE ${CMAKE_SOURCE_DIR}/include)
-target_compile_definitions(ZRuntimeExe PRIVATE
+target_include_directories(ZASM PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_compile_definitions(ZASM PRIVATE
         $<$<CONFIG:Debug>:_DEBUG>
 )
 
-# Rename the Z Runtime Executable
-set_target_properties(ZRuntimeExe PROPERTIES OUTPUT_NAME "Z")
+# Rename the ZASM Runtime Executable
+set_target_properties(ZASM PROPERTIES OUTPUT_NAME "Z")
 
 # Include external libraries
-target_include_directories(ZRuntimeExe PRIVATE
+target_include_directories(ZASM PRIVATE
         ${LIBFFI_INCLUDE_DIRS}
 )
 
-# Link external libraries to Z Runtime Executable
-target_link_libraries(ZRuntimeExe PRIVATE
+# Link external libraries to ZASM Runtime Executable
+target_link_libraries(ZASM PRIVATE
         #libffi::libffi         # Windows
         ${LIBFFI_LIBRARIES}     # Linux
 )

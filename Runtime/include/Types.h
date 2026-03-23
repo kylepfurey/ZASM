@@ -1,9 +1,9 @@
 // .h
-// Z Type Declarations
+// ZASM Type Declarations
 // by Kyle Furey
 
-#ifndef ZLANG_TYPES_H
-#define ZLANG_TYPES_H
+#ifndef ZASM_TYPES_H
+#define ZASM_TYPES_H
 
 #include <External.h>
 #include <Export.h>
@@ -53,4 +53,4 @@ typedef const ZChar *ZString;
 /** A pointer to an anonymous function. */
 typedef void (*ZFunc)(void);
 
-#endif // ZLANG_TYPES_H
+#endif // ZASM_TYPES_H

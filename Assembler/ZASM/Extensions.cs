@@ -1,5 +1,5 @@
 // .cs
-// Z Extension Functions
+// ZASM Extension Functions
 // by Kyle Furey
 
 using System;
@@ -10,10 +10,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ZLang
+namespace ZASM
 {
     /// <summary>
-    /// Extension helper methods for the Z tools.
+    /// Extension helper methods for the ZASM tools.
     /// </summary>
     public static class Extensions
     {

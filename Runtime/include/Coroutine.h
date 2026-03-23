@@ -1,18 +1,18 @@
 // .h
-// Z Coroutine Class
+// ZASM Coroutine Class
 // by Kyle Furey
 
-#ifndef ZLANG_COROUTINE_H
-#define ZLANG_COROUTINE_H
+#ifndef ZASM_COROUTINE_H
+#define ZASM_COROUTINE_H
 
 #include <Stack.h>
 #include <Vector.h>
 
 /** The number of milliseconds a coroutine is alloted before context-switching. */
-#define ZLANG_COROUTINE_DELAY_MS 100
+#define ZASM_COROUTINE_DELAY_MS 100
 
 /** The index of the main coroutine. */
-#define ZLANG_COROUTINE_MAIN 0
+#define ZASM_COROUTINE_MAIN 0
 
 /** Stack memory and metadata for a single coroutine. */
 typedef struct {
@@ -72,10 +72,10 @@ typedef struct {
 } ZHandlePointer;
 
 /** Initializes a main coroutine. */
-ZLANG_API ZBool ZCoroutine_newMain(ZCoroutine *self, ZUInt argc, const ZString argv[]);
+ZASM_API ZBool ZCoroutine_newMain(ZCoroutine *self, ZUInt argc, const ZString argv[]);
 
 /** Initializes an async coroutine by calling with the given handle. */
-ZLANG_API ZBool ZCoroutine_newAsync(
+ZASM_API ZBool ZCoroutine_newAsync(
     ZCoroutine *self,
     ZUInt handleStart,
     ZUInt argSize,
@@ -85,7 +85,7 @@ ZLANG_API ZBool ZCoroutine_newAsync(
 );
 
 /** Binds a handle to a coroutine. This cannot fail because binding is anonymous. */
-ZLANG_API ZBool ZCoroutine_bind(
+ZASM_API ZBool ZCoroutine_bind(
     ZCoroutine *self,
     ZUInt coroCount,
     ZCoroutine *coroutines[],
@@ -94,13 +94,13 @@ ZLANG_API ZBool ZCoroutine_bind(
 );
 
 /** Dispatches the return value of a coroutine. This cannot fail because binding is anonymous. */
-ZLANG_API void ZCoroutine_dispatch(
+ZASM_API void ZCoroutine_dispatch(
     const ZCoroutine *self,
     ZUInt coroCount,
     ZCoroutine *coroutines[]
 );
 
 /** Cleans up all memory owned by a coroutine. */
-ZLANG_API void ZCoroutine_delete(ZCoroutine *self);
+ZASM_API void ZCoroutine_delete(ZCoroutine *self);
 
-#endif // ZLANG_COROUTINE_H
+#endif // ZASM_COROUTINE_H

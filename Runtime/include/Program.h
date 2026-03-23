@@ -1,15 +1,15 @@
 // .h
-// Z Program Class
+// ZASM Program Class
 // by Kyle Furey
 
-#ifndef ZLANG_PROGRAM_H
-#define ZLANG_PROGRAM_H
+#ifndef ZASM_PROGRAM_H
+#define ZASM_PROGRAM_H
 
 #include <Coroutine.h>
 #include <FileStream.h>
 #include <Library.h>
 
-/** All data related to the runtime of a single Z program. */
+/** All data related to the runtime of a single ZASM program. */
 typedef struct {
     /**
      * A vector of pointers to coroutines (each coroutine slot).
@@ -31,35 +31,35 @@ typedef struct {
 } ZProgram;
 
 /** Returns the time in milliseconds. */
-ZLANG_API ZULong ZTime(ZUInt offsetMs);
+ZASM_API ZULong ZTime(ZUInt offsetMs);
 
-/** Initializes a new Z program. */
-ZLANG_API ZBool ZProgram_new(ZProgram *self, ZString path, ZUInt argc, const ZString argv[]);
+/** Initializes a new ZASM program. */
+ZASM_API ZBool ZProgram_new(ZProgram *self, ZString path, ZUInt argc, const ZString argv[]);
 
-/** Starts a new coroutine in a Z program. */
-ZLANG_API ZBool ZProgram_startCoroutine(
+/** Starts a new coroutine in a ZASM program. */
+ZASM_API ZBool ZProgram_startCoroutine(
     ZProgram *self,
     ZUInt handleStart,
     ZUInt argSize,
     ZUInt globalOffset
 );
 
-/** Stops a coroutine by its index in a Z program. Only "fails" on stopping main. */
-ZLANG_API ZBool ZProgram_stopCoroutine(ZProgram *self, ZUInt index, ZBool dispatch);
+/** Stops a coroutine by its index in a ZASM program. Only "fails" on stopping main. */
+ZASM_API ZBool ZProgram_stopCoroutine(ZProgram *self, ZUInt index, ZBool dispatch);
 
-/** Loads a .zlib file at the given path into the Z program. */
-ZLANG_API ZBool ZProgram_loadLibrary(ZProgram *self, ZString path);
+/** Loads a .zlib file at the given path into the ZASM program. */
+ZASM_API ZBool ZProgram_loadLibrary(ZProgram *self, ZString path);
 
-/** Binds a foreign function to the Z program. */
-ZLANG_API ZBool ZProgram_bind(
+/** Binds a foreign function to the ZASM program. */
+ZASM_API ZBool ZProgram_bind(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file,
     ZUInt library
 );
 
-/** Calls a foreign function from the Z program's libraries. */
-ZLANG_API ZBool ZProgram_call(
+/** Calls a foreign function from the ZASM program's libraries. */
+ZASM_API ZBool ZProgram_call(
     ZProgram *self,
     ZCoroutine *coro,
     ZFileStream *file,
@@ -67,13 +67,13 @@ ZLANG_API ZBool ZProgram_call(
     ZUInt ffi
 );
 
-/** Executes the next coroutine in a Z program. Returns whether the program can continue. */
-ZLANG_API ZBool ZProgram_step(ZProgram *self);
+/** Executes the next coroutine in a ZASM program. Returns whether the program can continue. */
+ZASM_API ZBool ZProgram_step(ZProgram *self);
 
-/** Runs a Z program until completion. Returns the result of main. */
-ZLANG_API ZInt ZProgram_execute(ZProgram *self);
+/** Runs a ZASM program until completion. Returns the result of main. */
+ZASM_API ZInt ZProgram_execute(ZProgram *self);
 
-/** Cleans up all memory owned by a Z program. */
-ZLANG_API void ZProgram_delete(ZProgram *self);
+/** Cleans up all memory owned by a ZASM program. */
+ZASM_API void ZProgram_delete(ZProgram *self);
 
-#endif // ZLANG_PROGRAM_H
+#endif // ZASM_PROGRAM_H

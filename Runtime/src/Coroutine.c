@@ -1,8 +1,8 @@
 // .c
-// Z Coroutine Class
+// ZASM Coroutine Class
 // by Kyle Furey
 
-#include <ZLang.h>
+#include <ZASM.h>
 
 /** Initializes a main coroutine. */
 ZBool ZCoroutine_newMain(ZCoroutine *self, ZUInt argc, const ZString argv[]) {
@@ -24,7 +24,7 @@ ZBool ZCoroutine_newMain(ZCoroutine *self, ZUInt argc, const ZString argv[]) {
     dest += sizeof(ZULong);
     memset(dest, 0, sizeof(ZULong)); // <ret>
     self->globalOffset = 1;
-    self->index = ZLANG_COROUTINE_MAIN;
+    self->index = ZASM_COROUTINE_MAIN;
     self->await = 0;
     self->delayMs = 0;
     self->id = (ZUShort) ZTime(0);
@@ -42,7 +42,7 @@ ZBool ZCoroutine_newAsync(
 ) {
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(parent != NULL, "<parent> was NULL!");
-    Zassert(index != ZLANG_COROUTINE_MAIN, "<index> was main coroutine!");
+    Zassert(index != ZASM_COROUTINE_MAIN, "<index> was main coroutine!");
     if (!ZStack_new(&self->stack, handleStart - 1 + sizeof(ZULong))) {
         Zerror("Could not initialize child coroutine stack!");
         return false;
@@ -71,7 +71,7 @@ ZBool ZCoroutine_newAsync(
     self->delayMs = 0;
     self->id = (ZUShort) ZTime(0);
     handle->id = self->id; // <id>
-    if (!ZVector_new(&self->dispatcher, ZLANG_DEFAULT_CAPACITY)) {
+    if (!ZVector_new(&self->dispatcher, ZASM_DEFAULT_CAPACITY)) {
         Zerror("Could not initialize child coroutine dispatcher vector!");
         return false;
     }
@@ -94,7 +94,7 @@ ZBool ZCoroutine_bind(
 ) {
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(coroutines != NULL, "<coroutines> was NULL!");
-    Zassert(self->index != ZLANG_COROUTINE_MAIN, "Cannot bind to main coroutine!");
+    Zassert(self->index != ZASM_COROUTINE_MAIN, "Cannot bind to main coroutine!");
     if (coroIndex >= coroCount ||
         coroutines[coroIndex] == NULL ||
         ZStack_peekBottom(
@@ -119,7 +119,7 @@ void ZCoroutine_dispatch(
 ) {
     Zassert(self != NULL, "<self> was NULL!");
     Zassert(coroutines != NULL, "<coroutines> was NULL!");
-    Zassert(self->index != ZLANG_COROUTINE_MAIN, "Cannot dispatch main coroutine!");
+    Zassert(self->index != ZASM_COROUTINE_MAIN, "Cannot dispatch main coroutine!");
     ZUInt count = self->dispatcher.count;
     for (ZUInt i = 0; i < count; ++i) {
         ZHandlePointer ptr = *(ZHandlePointer *) ZVector_get(&self->dispatcher, i);
@@ -143,7 +143,7 @@ void ZCoroutine_dispatch(
 /** Cleans up all memory owned by a coroutine. */
 void ZCoroutine_delete(ZCoroutine *self) {
     Zassert(self != NULL, "<self> was NULL!");
-    if (self->index != ZLANG_COROUTINE_MAIN) {
+    if (self->index != ZASM_COROUTINE_MAIN) {
         ZVector_delete(&self->dispatcher);
     }
 }
