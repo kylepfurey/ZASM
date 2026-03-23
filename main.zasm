@@ -15,6 +15,7 @@ main:
     push int                            ; Push int return to stack
     push *                              ; Push pointer argument to stack
     ptr  *, (* + int + size(msg))       ; Store pointer to Hello world! string
+    prep printf                         ; Prepare printf() for FFI call
     ffi  printf                         ; FFI call printf(), pops arguments
     pop  int                            ; Pop int return from stack
     pop  size(msg)                      ; Pop Hello world! string from stack
