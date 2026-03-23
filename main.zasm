@@ -6,7 +6,7 @@
 ; op write?, read?, size?
 
 ; C standard library printf().
-ext libc, "int printf(*, ...)"          ; Link to libc printf() function
+ext printf, libc, "int printf(*, ...)"  ; Link to libc printf() function, address named "printf"
 
 ; The entry point of the program.
 main:
