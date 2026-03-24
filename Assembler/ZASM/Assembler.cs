@@ -2,13 +2,7 @@
 // ZASM Assembler Functions
 // by Kyle Furey
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace ZASM
 {
@@ -90,9 +84,7 @@ namespace ZASM
         public static byte[]? AssembleString(string source)
         {
             LinkedList<string> tokens = TokenizeString(InlineCode(source));
-
-            tokens.PrintAll();
-
+            
             MemoryStream target = new();
 
             // TODO

@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
         return ZASM_ERROR;
     }
     return Zexecute(
-        (ZString) (argv[argc - 1]),
+        (ZString) (argc == 1 ? argv[0] : argv[1]),
         (ZUInt) (argc - 1),
         (const ZString *) (argv + 1)
     );
