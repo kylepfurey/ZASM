@@ -391,7 +391,7 @@ ZBool ZProgram_step(ZProgram *self) {
         // NOTE: Can deadlock
     } while (
         coro == NULL ||
-        coro->delayMs > ZTime(0) ||
+        coro->resumeTime > ZTime(0) ||
         (coro->await > 0 && (ZCoroutine *) ZVector_get(&self->coroutines, coro->await) != NULL)
     );
     ZULong current = ZTime(0);
@@ -403,7 +403,7 @@ ZBool ZProgram_step(ZProgram *self) {
         coro = (ZCoroutine *) ZVector_get(&self->coroutines, self->current);
         if (
             coro == NULL ||
-            coro->delayMs > current ||
+            coro->resumeTime > current ||
             (coro->await > 0 && (ZCoroutine *) ZVector_get(&self->coroutines, coro->await) != NULL)
         ) {
             break;

@@ -26,8 +26,8 @@ ZBool ZCoroutine_newMain(ZCoroutine *self, ZUInt argc, const ZString argv[]) {
     self->globalOffset = 1;
     self->index = ZASM_COROUTINE_MAIN;
     self->await = 0;
-    self->delayMs = 0;
-    self->id = (ZUShort) ZTime(0);
+    self->resumeTime = 0;
+    self->id = ZTime(0);
     return true;
 }
 
@@ -68,8 +68,8 @@ ZBool ZCoroutine_newAsync(
     self->globalOffset = globalOffset;
     self->index = index;
     self->await = 0;
-    self->delayMs = 0;
-    self->id = (ZUShort) ZTime(0);
+    self->resumeTime = 0;
+    self->id = ZTime(0);
     handle->id = self->id; // <id>
     if (!ZVector_new(&self->dispatcher, ZASM_DEFAULT_CAPACITY)) {
         Zerror("Could not initialize child coroutine dispatcher vector!");

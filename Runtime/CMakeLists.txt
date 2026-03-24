@@ -3,7 +3,7 @@
 # by Kyle Furey
 
 # Initialize CMake with vcpkg (if Windows)
-# set(CMAKE_TOOLCHAIN_FILE "$ENV{USERPROFILE}/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+#set(CMAKE_TOOLCHAIN_FILE "$ENV{USERPROFILE}/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE FILEPATH "vcpkg Toolchain File")
 cmake_minimum_required(VERSION 3.16)
 project(libZASM C)
 
@@ -41,6 +41,9 @@ add_library(libZASM SHARED
         ${CMAKE_SOURCE_DIR}/src/Opcode.c
         ${CMAKE_SOURCE_DIR}/src/Library.c
 )
+
+# Rename the ZASM Runtime Library
+set_target_properties(libZASM PROPERTIES OUTPUT_NAME "ZASM")
 
 # Set include directory and build macro
 target_include_directories(libZASM PUBLIC ${CMAKE_SOURCE_DIR}/include)

@@ -28,11 +28,11 @@ typedef struct {
     /** The index of a remote coroutine this coroutine is waiting on. 0 is NULL. */
     ZUInt await;
 
-    /** The delay in milliseconds before resuming this coroutine. */
-    ZUInt delayMs;
+    /** The time this coroutine's execution can resume. */
+    ZULong resumeTime;
 
     /** A random number used to identify this coroutine. */
-    ZUShort id;
+    ZULong id;
 
     /** A vector of pointers to handles used to share this coroutine's return value. */
     ZVector dispatcher;
