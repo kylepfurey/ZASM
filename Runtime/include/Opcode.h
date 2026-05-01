@@ -74,6 +74,10 @@ enum {
 /** The table of ZASM operation codes to functions. */
 extern ZBool (*const ZOpcode_TABLE[256])(ZProgram *, ZCoroutine *, ZFileStream *);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** Executes a ZASM program's next operation code. */
 ZASM_API ZBool ZOpcode_nextCode(ZProgram *self);
 
@@ -398,5 +402,9 @@ ZASM_API ZBool ZOpcode_ffi(
     ZCoroutine *coro,
     ZFileStream *file
 );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // ZASM_OPCODE_H

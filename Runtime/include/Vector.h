@@ -22,6 +22,10 @@ typedef struct {
     ZULong *array;
 } ZVector;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** Initializes a new vector with the given capacity. */
 ZASM_API ZBool ZVector_new(ZVector *self, ZUInt capacity);
 
@@ -36,5 +40,9 @@ ZASM_API void ZVector_set(ZVector *self, ZUInt index, ZULong data);
 
 /** Cleans up all memory owned by a vector. */
 ZASM_API void ZVector_delete(ZVector *self);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // ZASM_VECTOR_H

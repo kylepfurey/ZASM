@@ -30,6 +30,10 @@ typedef struct {
     ZLibrary libc;
 } ZProgram;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** Returns the time in milliseconds. */
 ZASM_API ZULong ZTime(ZUInt offsetMs);
 
@@ -75,5 +79,9 @@ ZASM_API ZInt ZProgram_execute(ZProgram *self);
 
 /** Cleans up all memory owned by a ZASM program. */
 ZASM_API void ZProgram_delete(ZProgram *self);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // ZASM_PROGRAM_H

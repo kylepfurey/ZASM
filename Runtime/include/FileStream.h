@@ -44,6 +44,10 @@ typedef struct {
     ZVector types;
 } ZFileStream;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** Initializes a new file stream. */
 ZASM_API ZBool ZFileStream_new(ZFileStream *self, ZString path, ZULong globalOffset);
 
@@ -84,5 +88,9 @@ ZASM_API ZType *ZFileStream_getType(const ZFileStream *self, ZUInt index);
 
 /** Cleans up all memory owned by a file stream. */
 ZASM_API void ZFileStream_delete(ZFileStream *self);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // ZASM_FILESTREAM_H

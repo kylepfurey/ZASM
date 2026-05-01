@@ -96,6 +96,10 @@ typedef struct {
 
 #pragma pack(pop)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** Initializes a new dynamic library. "libc" loads the standard library. */
 ZASM_API ZBool ZLibrary_new(ZLibrary *self, ZString name);
 
@@ -118,5 +122,9 @@ ZASM_API ZBool ZLibrary_call(ZLibrary *self, ZUInt index, ZStack *stack);
 
 /** Cleans up all memory owned by a dynamic library. */
 ZASM_API void ZLibrary_delete(ZLibrary *self);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // ZASM_LIBRARY_H

@@ -71,6 +71,10 @@ typedef struct {
     ZUInt offset;
 } ZHandlePointer;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** Initializes a main coroutine. */
 ZASM_API ZBool ZCoroutine_newMain(ZCoroutine *self, ZUInt argc, const ZString argv[]);
 
@@ -102,5 +106,9 @@ ZASM_API void ZCoroutine_dispatch(
 
 /** Cleans up all memory owned by a coroutine. */
 ZASM_API void ZCoroutine_delete(ZCoroutine *self);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // ZASM_COROUTINE_H

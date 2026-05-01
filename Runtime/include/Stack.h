@@ -19,6 +19,10 @@ typedef struct {
     ZByte *top;
 } ZStack;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** Initializes a new stack. This does not need to be deleted. */
 ZASM_API ZBool ZStack_new(ZStack *self, ZUInt pushed);
 
@@ -36,5 +40,9 @@ ZASM_API void *ZStack_peekBottom(ZStack *self, ZUInt offset, ZUInt size);
 
 /** Returns the current size of the stack. */
 ZASM_API ZUInt ZStack_size(const ZStack *self);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // ZASM_STACK_H
